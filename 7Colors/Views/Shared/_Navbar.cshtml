@@ -1,0 +1,42 @@
+﻿﻿<aside class="right-sidebar bg-sidebar" id="sidebar-wrapper">
+    <div id="sidebar" class="sidebar-heading">
+        <a asp-controller="Panel" asp-area="Admin" asp-action="FrontPage" class="list-group-item-action">
+            <i class='fa fa-dashboard'></i> لوحة التحكم
+        </a>
+    </div>
+    <!-- begin sidebar scrollbar -->
+    <div class="" data-simplebar style="height:100%;">
+        <!-- sidebar menu -->
+
+        <div class="clearfix"></div>
+        <div class="list-group list-group-flush">
+            <a class="list-group-item list-group-item-action" asp-area="Admin" asp-controller="HPGroups" asp-action="Index">
+                <i class="fa fa-cubes"></i> مجموعات الصفحة الرئيسية
+            </a>
+            <a class="list-group-item list-group-item-action" asp-area="Admin" asp-controller="Images" asp-action="Index">
+                <i class="fa fa-image"></i> صور الصفحة الرئيسية
+            </a>
+            <a class="list-group-item list-group-item-action" asp-area="Admin" asp-controller="Products" asp-action="Index">
+                <i class="fa fa-product-hunt"></i> المنتجات
+            </a>
+            <a class="list-group-item list-group-item-action" asp-area="Admin" asp-controller="ProductTypes" asp-action="Index">
+                <i class="fa fa-sitemap"></i> أنواع المنتجات
+            </a>
+            <a class="list-group-item list-group-item-action" asp-area="Admin" asp-controller="SpecialTags" asp-action="Index">
+                <i class="fa fa-tag"></i> العلامات الخاصة
+            </a>
+
+            <a class="list-group-item list-group-item-action" asp-area="Admin" asp-controller="Users" asp-action="Index">
+                <i class="fa fa-user-circle"></i> المستخدمين
+            </a>
+            <a class="list-group-item list-group-item-action" asp-controller="Messages" asp-action="Index">
+                <i class="fa fa-envelope-o"></i> الرسائل
+            </a>
+        </div>
+    </div>
+</aside>
+
+
+
+
+

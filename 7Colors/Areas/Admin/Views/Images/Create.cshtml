@@ -1,0 +1,82 @@
+﻿@model _7Colors.Models.Image
+
+@{
+    ViewData["Title"] = "إضافة صورة جديدة";
+}
+
+<div class="d-flex" id="wrapper">
+    <partial name="_Navbar" />
+    <!-- /#sidebar-wrapper -->
+    <!-- Page Content -->
+    <div id="page-content-wrapper">
+        @* <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
+        <button class="btn btn-primary" id="menu-toggle">Toggle Menu</button>
+        <a class="btn btn-warning float-right" asp-area="Admin" asp-controller="Products" asp-action="Create">Add-Product</a>
+        </nav> *@
+        <div class="container-fluid">
+            <h4 class="text-info">@ViewData["Title"] </h4>
+            <form asp-action="Create" method="post" enctype="multipart/form-data">
+                <div class="p-4">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <h4>@ViewBag.message</h4>
+                    <div class="form-group row">
+                        <div class="col-3">
+                            <label asp-for="Title"></label>
+                        </div>
+                        <div class="col-8">
+                            <input asp-for="Title" class="form-control" />
+                        </div>
+                        <span asp-validation-for="Title" class="text-danger"></span>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-3">
+                            <label asp-for="Description"></label>
+                        </div>
+                        <div class="col-8">
+                            <input asp-for="Description" class="form-control" />
+                        </div>
+                        <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-3">
+                            <label asp-for="Url"></label>
+                        </div>
+                        <div class="col-8">
+                            <input asp-for="Url" class="form-control" type="file" />
+                        </div>
+                        <span asp-validation-for="Url" class="text-danger"></span>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-3">
+                            <label asp-for="GroupId"></label>
+                        </div>
+                        <div class="col-8">
+                            <select asp-for="GroupId" asp-items="ViewBag.GroupId" class="form-control"></select>
+                        </div>
+                        <span asp-validation-for="GroupId" class="text-danger"></span>
+                    </div>                                      
+                    <div class="form-group row">
+                        <div class="col-3">
+                            <label asp-for="IsPublished"></label>
+                        </div>
+                        <div class="col-8">
+                            <input asp-for="IsPublished" type="checkbox" checked />
+                        </div>
+                        <span asp-validation-for="IsPublished" class="text-danger"></span>
+                    </div>
+                    <br />
+                    <br />
+                    <div class="form-group">
+                        <input class="btn" type="submit" value="حفظ" />
+                        <a asp-action="Index" class="btn">عودة للقائمة</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

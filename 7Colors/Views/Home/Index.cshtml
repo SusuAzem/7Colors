@@ -1,0 +1,77 @@
+﻿@model IEnumerable< _7Colors.Models.HPGroup>
+
+@{
+    ViewData["Title"] = "الصفحة الرئيسية";
+}
+
+
+@foreach (var item in Model)
+{
+    <h3 class="stacked">@item.Title</h3>
+    <br />
+    <br />
+    <div id="carouseI_@item.Id" class="carousel slide" data-bs-ride="carousel" data-bs-interval="2000" dir="rtl" data-bs-pause="hover"
+         data-id="@item.Id">
+
+        <div class="carousel-indicators">
+            @for (int i = 0; i < item.Images.Count();  i++)
+            {
+                <button type="button" data-bs-target="#carousel_@item.Id" data-bs-slide-to="@(i)" aria-label="Slide @i+1"
+                        class="@(i == 1?  "active" : "")" aria-current="@(i == 1?  "true" : "") ">
+                </button>
+            }
+        </div>
+        <div class="carousel-inner">
+
+            @for (int i = 0; i < item.Images.Count(); i++)
+            {
+                <div class="carousel-item @(i == 1?  "active" : "")">
+                    <img src="@item.Images.ElementAt(i).Url" class="d-block slideImg" alt="slide @item.Images.ElementAt(i).Id">
+                    <div class="carousel-caption d-none d-md-block">
+                        <h5>@item.Images.ElementAt(i).Title</h5>
+                        <p>@item.Images.ElementAt(i).Description</p>
+                    </div>
+                </div>
+            }
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#carouseI_@item.Id" data-bs-slide="prev" dir="rtl">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#carouseI_@item.Id" data-bs-slide="next" dir="rtl">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+        </button>
+    </div>
+    <br />
+    <br />
+    <br />
+}
+
+@section scripts {
+    <script type="text/javascript">
+        $(document).ready(function () {
+            let caros = document.querySelectorAll("carousel");
+            for (let item of caros) {
+                let id = item.getAttribute("data-id");
+                $("#carousel_"${id}).carousel();
+            }            
+            
+        });
+        $(function () {
+            var reg = '@TempData["register"]';
+            if (reg != '') {
+                alertify.success(reg);
+            }
+            var nreg = '@TempData["notregister"]';
+            if (nreg != '') {
+                alertify.error(nreg);
+            }
+            var login = '@TempData["login"]';
+            if (login != '') {
+                alertify.error(login);
+            }
+        })       
+ });
+    </script>
+}

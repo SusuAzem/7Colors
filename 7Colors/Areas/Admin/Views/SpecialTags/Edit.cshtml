@@ -1,0 +1,43 @@
+﻿@model _7Colors.Models.SpecialTag
+
+
+@{
+    ViewData["Title"] = "تعديل العلامة الخاصة";
+}
+
+<div class="d-flex" id="wrapper">
+    <partial name="_Navbar" />
+    <!-- /#sidebar-wrapper -->
+    <!-- Page Content -->
+    <div id="page-content-wrapper">
+        @* <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
+            <button class="btn btn-primary" id="menu-toggle">Toggle Menu</button>
+            <a class="btn btn-warning float-right" asp-area="Admin" asp-controller="ProductTypes" asp-action="Create">Add-ProductTypes</a>
+        </nav> *@
+        <h4 class="text-info">@ViewData["Title"]</h4>
+        <form asp-action="Edit" method="post">
+            <div class="p4">
+                <input type="hidden" asp-for="Id" />
+                <div asp-validation="ModelOnly" class="text-danger"></div>
+                <div class="form-group row">
+                    <div class="col-3">
+                        <label asp-for="Name"></label>
+                    </div>
+                    <div class="col-6">
+                        <input asp-for="Name" class="form-control" />
+                    </div>
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                </div>
+                <br />
+                <br />
+                <div class="form-group">
+                    <input type="submit" class="btn" value="تعديل" />
+                    <a asp-action="Index" class="btn">العودة للقائمة</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+@section scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

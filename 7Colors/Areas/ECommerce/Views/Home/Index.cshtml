@@ -1,0 +1,192 @@
+﻿@using _7Colors.Utility
+@using System.Collections.Specialized
+@using System.Text.Json
+@model IEnumerable<_7Colors.Models.Product>
+@{
+    ViewData["Title"] = "المتجر الالكتروني";
+    var pro = Model;
+}
+<!-- Showcase Area -->
+<h1>مرحباً بكم في المتجر الالتروني</h1>
+
+<section id="newDeals">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <h1 class="heading"> <span>كل المنتجات</span></h1>
+            </div>
+        </div>
+        <div id="searchWrapper" class="pt-4">
+            <input type="text" name="searchBar" id="searchBar" placeholder="البحث عن منتج" />
+            <form>
+                <select>
+                    <option value="1">افتراضي</option>
+                    <option value="2">ترتيب حسب السعر</option>
+                    <option value="3">ترتيب حسب الشهرة</option>
+                    <option value="4">ترتيب حسب المبيعات</option>
+                    <option value="5">ترتيب حسب التقييم</option>
+                </select>
+                @*                 <span><i class='bx bx-chevron-down'></i></span>
+                *@
+            </form>
+        </div>
+    </div>
+    <div id="newProducts" class="row pt-4">
+        @foreach (var product in Model)
+        {
+          <div class="col-md-4">
+                <div class="card">
+                    <div class="cardHeader">
+                        <ul class="icons">
+                            <li><i class="fa fa-heart"></i></li>
+                            <li>
+                                <a href="cart.html">
+                                    <i class="fa fa-shopping-bag"></i>
+                                </a>
+                            </li>
+                            <li> <i class="fa fa-search"></i></li>
+                        </ul>
+                        <img class="card-img-top" src="@product.Image" alt="card image">
+                    </div>
+                    <div class="card-body">
+                        <h5>@product.Name</h5>
+                        <h6>@product.ProductType!.Type</h6>
+                        <h7 class="price">السعر: @product.Price.ToString().ConvertNumerals() رس</h7>
+                        <a asp-action="Detail" class="btn btn-primary" asp-route-id="@product.Id">تفاصيل المنتج</a>
+                        <div class="rating">
+                            <i class="fa fa-star-o"></i>
+                            <i class="fa fa-star-o"></i>
+                            <i class="fa fa-star-o"></i>
+                            <i class="fa fa-star-o"></i>
+                            <i class="fa fa-star-o"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+    <div id="newProducts2" class="row pt-4"></div>
+    <div id="btnContainer"></div>
+</section>
+<!-- cta area -->
+@* <section class="cta">
+    <div class="cta-content">
+        <div class="container">
+            <h2>Free Shipping With Your Order<br>Start Today</h2>
+            <a href="contact.html" class="btn btn-primary">Lets Get Started</a>
+        </div>
+    </div>
+</section> *@
+
+
+@section scripts {}
+    @* <script>
+        const newProduct = document.getElementById("newProducts");
+        const btnContainer = document.getElementById("btnContainer");
+        let products = [];
+        let index = 0;
+        let pages = [];
+
+        const displayProducts = (products) => {
+            const htmlTemplate = products
+                .map((product) => {
+                    return `
+                       <div class="col-md-4">
+                        <div class="card">
+                            <div class="cardHeader">
+                                <ul class="icons">
+                                    <li><i class="fa fa-heart"></i></li>
+                                    <li>
+                                        <a href="cart.html">
+                                            <i class="fa fa-shopping-bag"></i>
+                                        </a>
+                                    </li>
+                                    <li> <i class="fa fa-search"></i></li>
+                                </ul>
+                                <img class="card-img-top" src="${product.Image}" alt="card image">
+                            </div>
+                            <div class="card-body">
+                                <h5>${product.Name}</h5>
+                                <h6>${product.ProductType.Type}</h6>
+                                <h7 class="price">السعر: ${product.Price}} رس</h7>
+                                <a asp-action="Detail" class="btn btn-primary" asp-route-id="${product.Id}">تفاصيل المنتج</a>
+                                <div class="rating">
+                                    <i class="fa fa-star-o"></i>
+                                    <i class="fa fa-star-o"></i>
+                                    <i class="fa fa-star-o"></i>
+                                    <i class="fa fa-star-o"></i>
+                                    <i class="fa fa-star-o"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+        `;
+                })
+                .join("");
+            newProduct.innerHTML = htmlTemplate;
+        };
+        const loadProducts = () => {
+            try {
+                products = @Json.Serialize(pro);
+                displayProducts(products);
+                console.log(products);
+                if (!response.ok)
+                    throw new Error(`${products.message} ${response.status}`);
+                return products;
+            } catch (err) {
+                console.log(err);
+            }
+        };
+        const paginate = (products) => {
+            const pageItems = 9;
+            const count = newProduct.getAttribute("data-count");
+            const pagesCount = Math.ceil(count / pageItems);
+            const newProducts = Array.from({ length: pagesCount }, (_, pageindex) => {
+                const start = pageindex * pageItems;
+                return products.slice(start, start + pageItems);
+            });
+            return newProducts;
+        };
+        const displayButtons = (btnContainer, pages, activeIndex) => {
+            let btns = pages.map((_, pageIndex) => {
+                return `<button class="pageBtn
+                ${activeIndex === pageIndex ? " activeBtn" : "null"}
+                                        " data-index= " ${pageIndex}">
+                ${pageIndex + 1}
+            </button>`;
+            });
+            btns.push(`<button class="prevBtn">
+                <i class="fa fa-arrow-left" aria-hidden="true"></i>
+            </button>`);
+            btnContainer.innerHTML = btns.join("");
+        };
+
+        btnContainer.addEventListener("click", function (e) {
+            if (e.target.classList.contains("btnContainer")) return;
+            if (e.target.classList.contains("pageBtn")) {
+                index = parseInt(e.target.dataset.index);
+            }
+            if (e.target.classList.contains("nextBtn")) {
+                index++;
+                if (index > pages.length - 1) {
+                    index = 0;
+                }
+            }
+            if (e.target.classList.contains("prevBtn")) {
+                index--;
+                if (index < 0) {
+                    index = pages.length - 1;
+                }
+            }
+            displayProducts(pages[index]);
+            displayButtons(btnContainer, pages, index);
+        });
+
+        window.addEventListener("load", async () => {
+            const products = await loadProducts();
+            pages = paginate(products);
+            displayProducts(pages[index]);
+            displayButtons(btnContainer, pages, index);
+        });
+    </script>
+} *@

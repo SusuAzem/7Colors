@@ -1,0 +1,82 @@
+﻿@model IEnumerable<_7Colors.Models.HPGroup>
+
+@{
+    ViewData["Title"] = "قائمة مجموعات الصفحة الرئيسية";
+}
+
+<div class="d-flex" id="wrapper">
+    <partial name="_Navbar" />
+    <!-- /#sidebar-wrapper -->
+    <!-- Page Content -->
+    <div id="page-content-wrapper">
+        @* <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
+        <button class="btn btn-primary" id="menu-toggle">Toggle Menu</button>
+        <a class="btn btn-warning float-right" asp-area="Admin" asp-controller="Products" asp-action="Create">Add-Product</a>
+        </nav> *@
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-lg-9">
+                    <h4 class="text-info">@ViewData["Title"]</h4>
+                </div>
+                <div class="col-lg-3">
+                    <a asp-action="Create" class="btn"><i class="fa fa-plus"></i>&nbsp; إضافة</a>
+                </div>
+            </div>
+            <br />
+            <div>
+                <table class="table table-striped border" id="myTable">
+                    <thead>
+                        <tr class="table-info">
+                            <th>@Html.DisplayNameFor(c => c.Title)</th>
+                            <th>@Html.DisplayNameFor(c => c.Description)</th>
+                            <th>الصور</th>
+                            <th width="140px">خيارات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@item.Title</td>
+                                <td>@item.Description</td>
+                                <td><a asp-controller="Images" asp-action="Index" asp-route-id="@item.Id">قائمة صور المجموعة</a></td>
+                                <partial name="_Buttons" model="@item.Id" />
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <p class="text-danger">
+                ملاحظة : إضافة مجموعة الصفحة الرئيسية أولاً، ثم إضافة الصور وتحديد المجموعة التابعة لها
+            </p>
+        </div>
+    </div>
+    <!-- /#wrapper -->
+</div>
+
+@section scripts {
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#myTable').DataTable({
+                language: {
+                    url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/ar.json',
+                },
+            });
+        });
+
+        $(function () {
+            var create = '@TempData["create"]'
+            if (create != '') {
+                alertify.success(create);
+            }
+            var edit = '@TempData["edit"]'
+            if (edit != '') {
+                alertify.success(edit);
+            }
+            var del = '@TempData["delete"]'
+            if (del != '') {
+                alertify.error(del);
+            }
+        })
+    </script>
+}

@@ -1,0 +1,62 @@
+﻿@using _7Colors.Utility
+@model IEnumerable<_7Colors.Models.Product>
+
+@{
+    ViewData["Title"] = "عربة المشتريات";
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-lg-12">
+            <h1 class="heading"> <span>عربتك</span> </h1>
+        </div>
+    </div>
+    <div class="row pt-5">
+        <div class="container">
+            <div class="table-responsive p-2">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>الصورة</th>
+                            <th>الاسم</th>
+                            <th>السعر</th>
+                            <th>نوع المنتج</th>
+                            <th>اللون</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <img src="@item.Image" width="200px" height="150px" />
+                                </td>
+                                <td>@item.Name</td>
+                                <td>@item.Price</td>
+                                <td>@item.ProductType!.Type</td>
+                                <td>@item.ProductColor</td>
+                                <td>
+                                    <a asp-area="ECommerce" asp-action="Remove" asp-controller="Home" asp-route-id="@item.Id" class="btn">
+                                        <i class="fa fa-trash"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            <a asp-action="Index" asp-controller="Home" class="btn">عودة للقائمة</a>
+        </div>
+        <div class="col-md-4">
+            <h5> المجموع الكلي @Model.Sum(c => c.Price).ToString().ConvertNumerals() رس</h5>
+        </div>
+        <div class="col-md-4">
+            <a asp-area="ECommerce" asp-action="Checkout" asp-controller="Order" class="btn">إكمال عملية الشراء</a>
+        </div>
+    </div>
+</div>

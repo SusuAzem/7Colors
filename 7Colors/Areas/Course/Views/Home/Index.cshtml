@@ -1,0 +1,16 @@
+﻿@{
+    ViewData["Title"] = "الدورة التعليمية";
+}
+
+<h1>@ViewData["Title"]</h1>
+<br />
+@if  (!User.Identity!.IsAuthenticated)
+{
+    <a title="Login" asp-action="Login" asp-controller="Home">
+        قم بتسجيل الدخول للاشراك بالدورة التعليمية
+    </a>
+}else{
+<a href="https://us06web.zoom.us/j/88120830241?pwd=3X9UF1wceZ0nYfAtKc604w8UgIj0la.1" target="_blank" title="Zoom link">
+    رابط الدورة التعليمية
+</a>
+}
