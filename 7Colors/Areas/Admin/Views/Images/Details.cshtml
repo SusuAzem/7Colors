@@ -9,14 +9,10 @@
     <!-- /#sidebar-wrapper -->
     <!-- Page Content -->
     <div id="page-content-wrapper">
-        @* <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
-        <button class="btn btn-primary" id="menu-toggle">Toggle Menu</button>
-        <a class="btn btn-warning float-right" asp-area="Admin" asp-controller="Products" asp-action="Create">Add-Product</a>
-        </nav> *@
         <div class="container-fluid">
             <h4 class="text-info">@ViewData["Title"] </h4>
-            <form asp-action="Details" method="post" enctype="multipart/form-data" class="col-6">
-                <div class="p-4">
+            <form asp-action="Details" method="post" enctype="multipart/form-data">
+                <div class="p-4 rounded border row">
                     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                     <h4>@ViewBag.message</h4>
                     <div class="form-group row">
@@ -39,12 +35,12 @@
                     </div>
                     <div class="form-group row">
                         <div class="col-3">
-                            <label asp-for="GroupId"></label>
+                            <label asp-for="PostId"></label>
                         </div>
                         <div class="col-8">
-                            <label asp-for="GroupId" class="form-control"></label>@Model.Group.Title
+                            <label asp-for="PostId" class="form-control" />@Model.Post.Title
                         </div>
-                        <span asp-validation-for="GroupId" class="text-danger"></span>
+                        <span asp-validation-for="PostId" class="text-danger"></span>
                     </div>
                     <div class="form-group row">
                         <div class="col-3">
@@ -56,23 +52,22 @@
                         <span asp-validation-for="IsPublished" class="text-danger"></span>
                     </div>
                     <br />
+                    <div class="form-group row">
+                        <div class="col-3"></div>
+                        <div class="col-6">
+                            <img src="@Model.Url" class="card-img" id="Detail" />
+                        </div>
+                    </div>
                     <br />
                     <div class="form-group">
-                        <a type="button" asp-action="Edit" asp-route-id="@Model.Id" class="btn">تعديل</a>                        
+                        <a type="button" asp-action="Edit" asp-route-id="@Model.Id" class="btn">تعديل</a>
                         <a asp-action="Index" class="btn">عودة للقائمة</a>
                     </div>
                 </div>
             </form>
-            <div id="proImg" class="col-6">
-                <div class="form-group">
-                    <div class="col-4">
-                        <label asp-for="Url"></label>
-                    </div>
-                    <div class="col-12">
-                        <img src="@Model.Url" />
-                    </div>
-                </div>
-            </div>
+            @*     <div id="proImg" class="col-6">
+
+            </div> *@
         </div>
     </div>
 </div>

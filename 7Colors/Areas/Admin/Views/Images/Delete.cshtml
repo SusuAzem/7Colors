@@ -8,11 +8,11 @@
     <partial name="_Navbar" />
     <!-- /#sidebar-wrapper -->
     <!-- Page Content -->
-    <div id="page-content-wrapper">       
+    <div id="page-content-wrapper">
         <div class="container-fluid">
             <h4 class="text-info">@ViewData["Title"] </h4>
-            <form asp-action="Details" method="post" enctype="multipart/form-data" class="col-6">
-                <div class="p-4">
+            <form asp-action="Delete" method="post" enctype="multipart/form-data" asp-route-id="@Model.Id">
+                <div class="p-4 rounded border row">
                     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                     <input type="hidden" asp-for="Id" />
                     <h4>@ViewBag.message</h4>
@@ -21,7 +21,7 @@
                             <label asp-for="Title"></label>
                         </div>
                         <div class="col-8">
-                            <label asp-for="Title" class="form-control" />@Model.Title
+                            <input asp-for="Title" class="form-control" readonly />
                         </div>
                         <span asp-validation-for="Title" class="text-danger"></span>
                     </div>
@@ -30,18 +30,18 @@
                             <label asp-for="Description"></label>
                         </div>
                         <div class="col-8">
-                            <label asp-for="Description" class="form-control" />@Model.Description
+                            <input asp-for="Description" class="form-control" readonly />
                         </div>
                         <span asp-validation-for="Description" class="text-danger"></span>
                     </div>
                     <div class="form-group row">
                         <div class="col-3">
-                            <label asp-for="GroupId"></label>
+                            <label asp-for="PostId"></label>
                         </div>
                         <div class="col-8">
-                            <label asp-for="GroupId" class="form-control"></label>@Model.Group.Title
+                            <input asp-for="Post.Title" class="form-control" readonly />
                         </div>
-                        <span asp-validation-for="GroupId" class="text-danger"></span>
+                        <span asp-validation-for="PostId" class="text-danger"></span>
                     </div>
                     <div class="form-group row">
                         <div class="col-3">
@@ -53,6 +53,12 @@
                         <span asp-validation-for="IsPublished" class="text-danger"></span>
                     </div>
                     <br />
+                    <div class="form-group row">
+                        <div class="col-3"></div>
+                        <div class="col-6">
+                            <img src="@Model.Url" class="card-img" id="Detail" />
+                        </div>
+                    </div>
                     <br />
                     <div class="form-group">
                         <input class="btn" type="submit" value="حذف" />
@@ -60,16 +66,6 @@
                     </div>
                 </div>
             </form>
-            <div id="proImg" class="col-6">
-                <div class="form-group">
-                    <div class="col-4">
-                        <label asp-for="Url"></label>
-                    </div>
-                    <div class="col-12">
-                        <img src="@Model.Url" />
-                    </div>
-                </div>
-            </div>
         </div>
     </div>
 </div>

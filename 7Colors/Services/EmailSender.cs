@@ -2,7 +2,7 @@
 using System.Net.Mail;
 using System.Net;
 
-namespace _7Colors.Utility
+namespace _7Colors.Services
 {
     public class EmailSender : IEmailSender
     {

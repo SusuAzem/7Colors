@@ -13,7 +13,7 @@ using Microsoft.Extensions.Options;
 using System.Security.Claims;
 using Newtonsoft.Json.Serialization;
 using System.Text.Json.Serialization;
-using _7Colors.Utility;
+using _7Colors.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,6 +24,8 @@ builder.Services.AddSession(op =>
 });
 builder.Services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.TryAddSingleton<IEmailSender, EmailSender>();
+builder.Services.AddTransient<IFileManager, FileManager>();
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddControllersWithViews(
     options => options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true)
     .AddNewtonsoftJson(options =>

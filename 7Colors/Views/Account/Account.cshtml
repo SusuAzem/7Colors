@@ -1,7 +1,7 @@
 ﻿@model _7Colors.Models.User
 
 @{
-    ViewData["Title"] = "إكمال تسجيل المستخدم";
+    ViewData["Title"] = "حساب المستخدم";
 }
 
 <div class="container">
@@ -130,7 +130,7 @@
             </div> *@
             <div class="form-group">
                 <input type="submit" value="تعديل" class="btn" />
-                <a asp-action="Index" class="btn">الصفحة الرئيسية</a>
+                <a asp-action="Index" asp-controller="Home" class="btn">الصفحة الرئيسية</a>
             </div>
         </form>
     </div>

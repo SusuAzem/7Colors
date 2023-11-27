@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
-using _7Colors.Utility;
 using Microsoft.AspNetCore.Mvc;
 
 namespace _7Colors.Models

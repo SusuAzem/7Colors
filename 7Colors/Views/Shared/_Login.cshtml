@@ -1,0 +1,28 @@
+﻿﻿@using Microsoft.AspNetCore.Identity
+@using System.Security.Claims
+@{
+    string? nameId = null;
+    if (User.Identity!.IsAuthenticated)
+    {
+        nameId = User.Claims.FirstOrDefault(m => m.Type == ClaimTypes.NameIdentifier)!.Value;
+    }
+}
+<ul class="navbar-nav loging">
+    @if (User.Identity!.IsAuthenticated)
+    {
+        <li class="nav-item ">
+            <a class="nav-link text-dark" asp-controller="Home" asp-action="Account" asp-route-nameId="@nameId">
+                مرحباً @User.Identity.Name
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Logout">تسجيل الخروج</a>
+        </li>
+    }
+    else
+    {
+        <li class="nav-item">
+            <a class="nav-link text-dark g-signin2" asp-area="" asp-controller="Home" asp-action="Login">تسجيل الدخول</a>
+        </li>
+    }
+</ul>

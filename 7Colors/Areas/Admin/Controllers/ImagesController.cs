@@ -19,24 +19,24 @@ namespace _7Colors.Areas.Admin.Controllers
             this.webHost = webHost;
         }
 
-        public IActionResult Index(int? Id = null)
+        public IActionResult Index(int? id = null)
         {
-            if (Id == null)
+            if (id == null)
             {
-                ViewData["type"] = "allG";
-                return View(context.Images.Include(p => p.Group).ToList());
+                return View(context.Images.Include(p => p.Post).ToList());
             }
             else
             {
-                ViewData["type"] = context.HPGroups.FirstOrDefault(g=>g.Id == Id)!.Title;
-                return View(context.Images.Where(i=>i.GroupId == Id).ToList());
+                return View(context.Images.Where(i=>i.PostId == id)
+                    .Include(p => p.Post).ToList());
             }
         }
-      
+
+
         [HttpGet]
         public IActionResult Create()
         {
-            ViewData["GroupId"] = new SelectList(context.HPGroups.ToList(), "Id", "Title");
+            ViewData["PostId"] = new SelectList(context.Posts.ToList(), "Id", "Title");
             return View();
         }
 
@@ -45,11 +45,11 @@ namespace _7Colors.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Image img, [FromForm] IFormFile Url)
         {
-            var existedImg = context.Images.FirstOrDefault(i => i.Title == img.Title & i.GroupId == img.GroupId);
+            var existedImg = context.Images.FirstOrDefault(i => i.Title == img.Title & i.PostId == img.PostId);
             if (existedImg != null)
             {
                 ViewBag.message = "هذه الصورة موجودة مسبقاً";
-                ViewData["GroupId"] = new SelectList(context.HPGroups.ToList(), "Id", "Title");
+                ViewData["PostId"] = new SelectList(context.Posts.ToList(), "Id", "Title");
                 return View(img);
             }
             if (Url != null)
@@ -69,20 +69,20 @@ namespace _7Colors.Areas.Admin.Controllers
                 TempData["Create"] = "لقد تم إضافة الصورة";
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["GroupId"] = new SelectList(context.HPGroups.ToList(), "Id", "Title");
+            ViewData["PostId"] = new SelectList(context.Posts.ToList(), "Id", "Title");
             return View(img);
         }
 
 
         [HttpGet]
-        public IActionResult Edit(int? Id)
+        public IActionResult Edit(int? id)
         {
-            ViewData["GroupId"] = new SelectList(context.HPGroups.ToList(), "Id", "Title");
-            if (Id == null)
+            ViewData["PostId"] = new SelectList(context.Posts.ToList(), "Id", "Title");
+            if (id == null)
             {
                 return NotFound();
             }
-            var img = context.Images.Include(c => c.Group).FirstOrDefault(c => c.Id == Id);
+            var img = context.Images.Include(c => c.Post).FirstOrDefault(c => c.Id == id);
             if (img == null)
             {
                 return NotFound();
@@ -110,15 +110,30 @@ namespace _7Colors.Areas.Admin.Controllers
             }
             return View(img);
         }
-     
+
         [HttpGet]
-        public IActionResult Details(int? Id)
+        public IActionResult Details(int? id)
         {
-            if (Id == null)
+            if (id == null)
             {
                 return NotFound();
             }
-            var img = context.Images.Include(c => c.Group).FirstOrDefault(c => c.Id == Id);
+            var img = context.Images.Include(c => c.Post).FirstOrDefault(c => c.Id == id);
+            if (img == null)
+            {
+                return NotFound();
+            }
+            return View(img);
+        }
+
+        [HttpGet]
+        public IActionResult Delete(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+            var img = context.Images.Include(c => c.Post).FirstOrDefault(c => c.Id == id);
             if (img == null)
             {
                 return NotFound();
@@ -128,39 +143,17 @@ namespace _7Colors.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Details(Image img)
+        public async Task<IActionResult> Delete(int? id, Image img)
         {
-            return RedirectToAction(nameof(Edit));
-        }
-
-        [HttpGet]
-        public IActionResult Delete(int? Id)
-        {
-            if (Id == null)
+            if (id == null)
             {
                 return NotFound();
             }
-            var img = context.Images.Include(c => c.Group).FirstOrDefault(c => c.Id == Id);
-            if (img == null)
+            if (id != img.Id)
             {
                 return NotFound();
             }
-            return View(img);
-        }
-      
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Delete(int? Id, Image img)
-        {
-            if (Id == null)
-            {
-                return NotFound();
-            }
-            if (Id != img.Id)
-            {
-                return NotFound();
-            }
-            var p = context.Images.FirstOrDefault(c => c.Id == Id);
+            var p = context.Images.FirstOrDefault(c => c.Id == id);
             if (p == null)
             {
                 return NotFound();

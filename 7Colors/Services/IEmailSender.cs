@@ -1,4 +1,4 @@
-﻿namespace _7Colors.Utility
+﻿namespace _7Colors.Services
 {
     public interface IEmailSender
     {

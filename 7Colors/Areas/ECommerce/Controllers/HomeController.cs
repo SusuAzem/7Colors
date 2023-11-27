@@ -1,6 +1,5 @@
 ﻿using _7Colors.Data;
 using _7Colors.Models;
-using _7Colors.Utility;
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -9,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 using System.Text.Json;
 using Newtonsoft.Json;
+using _7Colors.Services;
 
 namespace _7Colors.Areas.ECommerce.Controllers
 {
@@ -31,8 +31,10 @@ namespace _7Colors.Areas.ECommerce.Controllers
         }
         [HttpGet]
         public JsonResult Data()
-        {        
-            return Json(context.Products.Include(c => c.ProductType).Include(c => c.SpecialTag).ToList());
+        {
+            var products = context.Products.Include(c => c.ProductType).Include(c => c.SpecialTag).Select(p=>
+            new {id= p.Id, name = p.Name,img = p.Image, type=p.ProductType!.Type, price = p.Price}).ToList();
+            return Json(new {data = products});
         }
         [HttpGet]
         public IActionResult Detail(int? id)

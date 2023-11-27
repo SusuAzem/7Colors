@@ -1,28 +1,26 @@
-﻿@model _7Colors.Models.HPGroup
+﻿@using _7Colors.Services
+@model _7Colors.Models.Post
 
 @{
-    ViewData["Title"] = "حذف مجموعة";
+    ViewData["Title"] = "حذف الموضوع";
 }
 <div class="d-flex" id="wrapper">
     <partial name="_Navbar" />
     <!-- /#sidebar-wrapper -->
     <!-- Page Content -->
-    <div id="page-content-wrapper">
-        @*   <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
-        <button class="btn btn-primary" id="menu-toggle">Toggle Menu</button>
-        <a class="btn btn-warning float-right" asp-area="Admin" asp-controller="Products" asp-action="Create">Add-Product</a>
-        </nav> *@
+    <div id="page-content-wrapper">      
         <div class="container-fluid">
             <h4 class="text-info">@ViewData["Title"]</h4>
-            <form asp-action="Delete" method="post">
+            <form method="post">
                 <div class="p-4 rounded border row">
                     <div asp-validation="ModelOnly" class="text-danger"></div>
+                    <input type="hidden" asp-for="Id" />
                     <div class="form-group row">
                         <div class="col-3">
                             <label asp-for="Title"></label>
                         </div>
                         <div class="col-6">
-                            <label asp-for="Title" class="form-control" />@Model.Title
+                            <input asp-for="Title" class="form-control" readonly />
                         </div>
                         <span asp-validation-for="Title" class="text-danger"></span>
                     </div>
@@ -31,9 +29,18 @@
                             <label asp-for="Description"></label>
                         </div>
                         <div class="col-6">
-                            <label asp-for="Description" class="form-control" />@Model.Description
+                            <textarea asp-for="Description" class="form-control" cols="40" rows="5" readonly></textarea>
                         </div>
                         <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-3">
+                            <label asp-for="Created"></label>
+                        </div>
+                        <div class="col-6">
+                            <input asp-for="Created.Date" class="form-control" readonly/>
+                        </div>
+                        <span asp-validation-for="Created" class="text-danger"></span>
                     </div>
                     <br />
                     <br />

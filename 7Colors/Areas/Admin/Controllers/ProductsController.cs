@@ -84,8 +84,7 @@ namespace _7Colors.Areas.Admin.Controllers
 
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        
+        [ValidateAntiForgeryToken]       
         public async Task<IActionResult> Edit(Product pro, IFormFile image)
         {          
             if (image != null)

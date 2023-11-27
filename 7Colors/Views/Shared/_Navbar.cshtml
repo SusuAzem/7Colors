@@ -10,13 +10,13 @@
 
         <div class="clearfix"></div>
         <div class="list-group list-group-flush">
-            <a class="list-group-item list-group-item-action" asp-area="Admin" asp-controller="HPGroups" asp-action="Index">
-                <i class="fa fa-cubes"></i> مجموعات الصفحة الرئيسية
+            <a class="list-group-item list-group-item-action" asp-area="Admin" asp-controller="Posts" asp-action="Index">
+                <i class="fa fa-cubes"></i> مواضيع الصفحة الرئيسية
             </a>
-            <a class="list-group-item list-group-item-action" asp-area="Admin" asp-controller="Images" asp-action="Index">
+            <a class="list-group-item list-group-item-action" asp-area="Admin" asp-controller="Images" asp-action="Index" asp-route-id=null>
                 <i class="fa fa-image"></i> صور الصفحة الرئيسية
             </a>
-            <a class="list-group-item list-group-item-action" asp-area="Admin" asp-controller="Products" asp-action="Index">
+            <a class="list-group-item list-group-item-action" asp-area="Admin" asp-controller="Products" asp-action="Index" >
                 <i class="fa fa-product-hunt"></i> المنتجات
             </a>
             <a class="list-group-item list-group-item-action" asp-area="Admin" asp-controller="ProductTypes" asp-action="Index">
@@ -29,7 +29,7 @@
             <a class="list-group-item list-group-item-action" asp-area="Admin" asp-controller="Users" asp-action="Index">
                 <i class="fa fa-user-circle"></i> المستخدمين
             </a>
-            <a class="list-group-item list-group-item-action" asp-controller="Messages" asp-action="Index">
+            <a class="list-group-item list-group-item-action" asp-area="Admin" asp-controller="Messages" asp-action="Index">
                 <i class="fa fa-envelope-o"></i> الرسائل
             </a>
         </div>

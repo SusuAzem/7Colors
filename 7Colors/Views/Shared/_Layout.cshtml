@@ -1,6 +1,6 @@
-﻿@using System.Globalization;
-@using System.Security.Claims
-@using _7Colors.Utility
+﻿@using System.Security.Claims
+@using _7Colors.Services
+@using System.Globalization;
 @using System.Net.Http
 @using Microsoft.AspNetCore.Http
 @inject IHttpContextAccessor HttpContextAccessor
@@ -12,14 +12,7 @@
     {
         products = new List<Product>();
     }
-    count = products.Count();
-    string? nameId = null;
-    if (User.Identity!.IsAuthenticated)
-    {
-        nameId = User.Claims.FirstOrDefault(m => m.Type == ClaimTypes.NameIdentifier)!.Value;
-    }
-
-    // var nameId = User.Claims.FirstOrDefault(m => m.Type == ClaimTypes.NameIdentifier)!.Value;
+    count = products.Count();   
 }
 
 <!DOCTYPE html>
@@ -36,6 +29,8 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.dataTables.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.13.2/themes/base/jquery-ui.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.js"></script>
+
     @*   <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     *@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
@@ -72,23 +67,7 @@
                                 (@count)
                             </a>
                         </li>
-                        @if (User.Identity!.IsAuthenticated)
-                        {
-                            <li class="nav-item loging">
-                                <a class="nav-link text-dark" asp-controller="Home" asp-action="Account" asp-route-nameId ="@nameId">
-                                مرحباً @User.Identity.Name
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Logout">تسجيل الخروج</a>
-                            </li>
-                        }
-                        else
-                        {
-                            <li class="nav-item loging">
-                                <a class="nav-link text-dark g-signin2" asp-area="" asp-controller="Home" asp-action="Login">تسجيل الدخول</a>
-                            </li>
-                        }
+                        <partial name="_Login"></partial>
                     </ul>
                 </div>
             </div>
@@ -165,10 +144,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://apis.google.com/js/platform.js" async defer></script>
-   
     <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
-    @*     <script src="https://cdnjs.cloudflare.com/ajax/libs/datatables-buttons/2.4.2/js/buttons.flash.min.js"></script>
-    *@
     <script src="https://cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/alertify.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
     <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>

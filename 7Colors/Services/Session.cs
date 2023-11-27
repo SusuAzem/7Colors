@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace _7Colors.Utility
+namespace _7Colors.Services
 {
     public static class SessionExtensions
     {
@@ -13,7 +13,7 @@ namespace _7Colors.Utility
         {
             var value = session.GetString(key);
 
-            return value == null ? default(T)! :
+            return value == null ? default! :
                 JsonConvert.DeserializeObject<T>(value)!;
 
         }

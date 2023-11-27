@@ -27,11 +27,11 @@ namespace _7Colors.Models
         public bool IsPublished { get; set; }
 
         [Required(ErrorMessage = "حقل المجموعة مطلوب")]
-        [Display(Name = "المجموعة")]
-        [ForeignKey("Group")]
-        public int GroupId { get; set; }
+        [Display(Name = "الموضوع")]
+        [ForeignKey("Post")]
+        public int PostId { get; set; }
 
-        [ForeignKey("GroupId")]
-        public virtual HPGroup Group { get; set; } = null!;
+        [ForeignKey("PostId")]
+        public virtual Post Post { get; set; } = null!;
     }
 }

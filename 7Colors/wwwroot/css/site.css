@@ -12,6 +12,11 @@ h1, h2, h3, h4, h5, h6 {
     transition: .2s ease;
 }
 
+.CartImg {
+    width: 200px;
+    height: 150px
+}
+
 @media (min-width: 768px) {
     html {
         font-size: 18px;
@@ -140,7 +145,7 @@ tr {
     }
 
 table#myTable img {
-    min-height: 100px;
+    /*min-height: 100px;*/
     max-width: 140px;
     object-fit: contain;
 }
@@ -407,27 +412,45 @@ main {
 }
 
 .card-img, .card-img-bottom, .card-img-top {
-    max-height: 200px;
+    /*max-height: 200px;*/
     margin: auto;
     object-fit: contain;
     align-self: center;
     padding: 0px 20px 0px 20px;
 }
+
     .card-img#Detail {
-        width:100%;
-        height:250px;
-        border-radius: 5px; 
+        width: 100%;
+        border-radius: 5px;
         border: 1px solid #efefef;
+        /*height: 200px;*/
+        padding: 10px 10px 10px 10px;
     }
 
+a > div {
+    display: none;
+    z-index: 99;
+}
 
-    .card-body {
-        text-align: center;
-        align-self: center;
-        margin-bottom: 2px;
-        padding: 1rem 1rem 1rem 1rem;
-        margin-top: 20px;
+a:hover > div {
+    display: block;
+}
+
+    a:hover > div img {
+        width: 150px;
     }
+
+div.imgL {
+    align-self: baseline;
+}
+
+.card-body {
+    text-align: center;
+    align-self: center;
+    margin-bottom: 2px;
+    padding: 1rem 1rem 1rem 1rem;
+    margin-top: 20px;
+}
 
     .card-body .price {
         color: #ff7c9c;
@@ -467,6 +490,7 @@ main {
         padding: 0.8rem 0.8rem;
         line-height: 1.4rem !important;
     }
+
         .cardHeader .icons li .fa {
             font: normal normal normal 20px/1 FontAwesome;
         }
@@ -475,18 +499,19 @@ main {
         .cardHeader .icons li i {
             transition: all 500ms ease-in-out;
         }
-.cardHeader .icons li:nth-child(2) {
-    padding-bottom: 1px;
-}
 
-    .cardHeader .icons li:not(:last-child) {
-        margin-bottom: 0.4rem;
-    }
+        .cardHeader .icons li:nth-child(2) {
+            padding-bottom: 1px;
+        }
 
-    .cardHeader .icons li:hover {
-        background-color: #ff7c9c;
-        color: #fff;
-    }
+        .cardHeader .icons li:not(:last-child) {
+            margin-bottom: 0.4rem;
+        }
+
+        .cardHeader .icons li:hover {
+            background-color: #ff7c9c;
+            color: #fff;
+        }
 
 .card:hover .icons {
     opacity: 1;
@@ -501,11 +526,13 @@ main {
 .rating {
     color: #43b3d9;
 }
+
 .in {
     border-radius: 50%;
-    background-color:forestgreen;
-    width:42px;
+    background-color: forestgreen;
+    width: 42px;
 }
+
 .out {
     border-radius: 50%;
     background-color: firebrick;
@@ -516,6 +543,10 @@ a.btn-primary, a.btn:hover, a.btn:active, input.btn:hover, input.btn.active {
     background-image: linear-gradient( 217deg, rgb(229, 85, 76), rgba(255, 0, 0, 0) 70.71% ), linear-gradient(127deg, rgb(121, 193, 73), rgba(0, 255, 0, 0) 70.71%), linear-gradient(336deg, rgb(58, 171, 225), rgba(0, 0, 255, 0) 70.71%);
     /*    border: var(--bs-border-width) solid var(--bs-border-color);
 */
+}
+
+#page-content-wrapper div.row {
+    margin-top: 10px;
 }
 
 
@@ -551,6 +582,8 @@ a.btn.danger:hover, a.btn.danger:active {
 
 #sidebar-wrapper {
     border-left: #dee2e6 1px solid;
+    margin-left: 20px;
+    min-width: 200px;
 }
 
 .heading {
@@ -600,6 +633,13 @@ a.btn.danger:hover, a.btn.danger:active {
             width: 250px !important;
         }
 
+.dataTables_wrapper .dataTables_length,
+.dataTables_wrapper .dataTables_filter,
+.dataTables_wrapper .dataTables_info,
+.dataTables_wrapper .dataTables_processing,
+.dataTables_wrapper .dataTables_paginate {
+    margin-bottom: 10px;
+}
 
 -----------------
 Contact-area

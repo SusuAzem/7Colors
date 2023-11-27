@@ -8,125 +8,41 @@ namespace _7Colors.Areas.Admin.Controllers
     [Area("Admin")]
     public class MessagesController : Controller
     {
-        private readonly AppDbContext context;
+        private readonly AppDbContext _context;
 
         public MessagesController(AppDbContext context)
         {
-            this.context = context;
+            _context = context;
         }
         public IActionResult Index()
         {
-            return View(context.ProductTypes.ToList());
-        }
-        [HttpGet]
-        public IActionResult Create()
-        {
             return View();
         }
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(ProductType protype)
-        {
-            if (ModelState.IsValid)
-            {
-                context.ProductTypes.Add(protype);
-                await context.SaveChangesAsync();
-                TempData["Create"] = "لقد تم إضافة نوع المنتج";
-                return RedirectToAction(nameof(Index));
-            }
-            return View(protype);
-        }
+
+        #region API CALLS
         [HttpGet]
-        public IActionResult Edit(int? Id)
+        public IActionResult GetAll()
         {
-            if (Id == null)
-            {
-                return NotFound();
-            }
-            var type = context.ProductTypes.Find(Id);
-            if (type == null)
-            {
-                return NotFound();
-            }
-            return View(type);
-        }
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(ProductType protype)
-        {
-            if (ModelState.IsValid)
-            {
-                context.ProductTypes.Update(protype);
-                await context.SaveChangesAsync();
-                TempData["Edit"] = "لقد تم تعديل نوع المنتج";
-                return RedirectToAction(nameof(Index));
-            }
-            return View(protype);
-        }
-        [HttpGet]
-        public IActionResult Details(int? Id)
-        {
-            if (Id == null)
-            {
-                return NotFound();
-            }
-            var type = context.ProductTypes.Find(Id);
-            if (type == null)
-            {
-                return NotFound();
-            }
-            return View(type);
+            var messages = _context.Messages.ToList();
+            return Json(new { data = messages });
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Details(ProductType protype)
-        {           
-             return RedirectToAction(nameof(Edit));          
-        }
+        [HttpDelete]
+        public IActionResult Delete(int id)
+        {
+            var message = _context.Messages.FirstOrDefault(m => m.Id == id);
+            if (message == null)
+            {
+                return Json(new { success = false, message = "خطأ بعملية الحذف" });
+            }
 
-        [HttpGet]
-        public IActionResult Delete(int? Id)
-        {
-            if (Id == null)
-            {
-                return NotFound();
-            }
-            var type = context.ProductTypes.Find(Id);
-            if (type == null)
-            {
-                return NotFound();
-            }
-            return View(type);
+            _context.Messages.Remove(message);
+            _context.SaveChanges();
+
+            return Json(new { success = true, message = "تم الحذف بنجاح" });
         }
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Delete(int? Id, ProductType protype)
-        {
-            if (Id == null)
-            {
-                return NotFound();
-            }
-            if (Id != protype.Id)
-            {
-                return NotFound();
-            }
-            var type = context.ProductTypes.Find(Id);
-            if (type == null)
-            {
-                return NotFound();
-            }
-            if (ModelState.IsValid)
-            {
-                context.ProductTypes.Remove(protype);
-                await context.SaveChangesAsync();
-                TempData["Delete"] = "لقد تم حذف نوع المنتج";
-                return RedirectToAction(nameof(Index));
-            }
-            return View(protype);
-        }
-        #region MyRegion
 
         #endregion
+
     }
 }

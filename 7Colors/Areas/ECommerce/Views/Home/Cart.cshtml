@@ -1,4 +1,4 @@
-﻿@using _7Colors.Utility
+﻿@using _7Colors.Services
 @model IEnumerable<_7Colors.Models.Product>
 
 @{
@@ -30,7 +30,7 @@
                         {
                             <tr>
                                 <td>
-                                    <img src="@item.Image" width="200px" height="150px" />
+                                    <img src="@item.Image" class="CartImg"/>
                                 </td>
                                 <td>@item.Name</td>
                                 <td>@item.Price</td>

@@ -11,12 +11,12 @@ namespace _7Colors.Data
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
         public DbSet<Image> Images { get; set; }
-        public DbSet<HPGroup>  HPGroups { get; set; }
+        public DbSet<Post>  Posts { get; set; }
         public DbSet<ProductType> ProductTypes { get; set; }
         public DbSet<SpecialTag> SpecialTags { get; set; }
         public DbSet<Product> Products { get; set; }
         public DbSet<User> Users { get; set; }
-
+        public DbSet<Message> Messages { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -49,14 +49,14 @@ namespace _7Colors.Data
                .Property(p => p.TagId)
                .HasDefaultValue(0);
 
-            modelBuilder.Entity<HPGroup>()
+            modelBuilder.Entity<Post>()
                 .HasMany(g => g.Images)
-                .WithOne(i => i.Group)
-                .HasForeignKey(i => i.GroupId)
+                .WithOne(i => i.Post)
+                .HasForeignKey(i => i.PostId)
                 .IsRequired();
 
             modelBuilder.Entity<Image>()
-                .Property(p => p.GroupId)
+                .Property(p => p.PostId)
                 .HasDefaultValue(0);
                 
             base.OnModelCreating(modelBuilder);

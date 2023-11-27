@@ -37,13 +37,13 @@ namespace _7Colors.Areas.Admin.Controllers
             return View(protype);
         }
         [HttpGet]
-        public IActionResult Edit(int? Id)
+        public IActionResult Edit(int? id)
         {
-            if (Id == null)
+            if (id == null)
             {
                 return NotFound();
             }
-            var type = context.ProductTypes.Find(Id);
+            var type = context.ProductTypes.Find(id);
             if (type == null)
             {
                 return NotFound();
@@ -64,35 +64,28 @@ namespace _7Colors.Areas.Admin.Controllers
             return View(protype);
         }
         [HttpGet]
-        public IActionResult Details(int? Id)
+        public IActionResult Details(int? id)
         {
-            if (Id == null)
+            if (id == null)
             {
                 return NotFound();
             }
-            var type = context.ProductTypes.Find(Id);
+            var type = context.ProductTypes.Find(id);
             if (type == null)
             {
                 return NotFound();
             }
             return View(type);
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Details(ProductType protype)
-        {           
-             return RedirectToAction(nameof(Edit));          
         }
 
         [HttpGet]
-        public IActionResult Delete(int? Id)
+        public IActionResult Delete(int? id)
         {
-            if (Id == null)
+            if (id == null)
             {
                 return NotFound();
             }
-            var type = context.ProductTypes.Find(Id);
+            var type = context.ProductTypes.Find(id);
             if (type == null)
             {
                 return NotFound();
@@ -101,29 +94,29 @@ namespace _7Colors.Areas.Admin.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Delete(int? Id, ProductType protype)
+        public async Task<IActionResult> Delete(int? id, ProductType protype)
         {
-            if (Id == null)
+            if (id == null)
             {
                 return NotFound();
             }
-            if (Id != protype.Id)
+            if (id != protype.Id)
             {
                 return NotFound();
             }
-            var type = context.ProductTypes.Find(Id);
+            var type = context.ProductTypes.Find(id);
             if (type == null)
             {
                 return NotFound();
             }
             if (ModelState.IsValid)
             {
-                context.ProductTypes.Remove(protype);
+                context.ProductTypes.Remove(type);
                 await context.SaveChangesAsync();
                 TempData["Delete"] = "لقد تم حذف نوع المنتج";
                 return RedirectToAction(nameof(Index));
             }
-            return View(protype);
+            return View(type);
         }
         #region MyRegion
 

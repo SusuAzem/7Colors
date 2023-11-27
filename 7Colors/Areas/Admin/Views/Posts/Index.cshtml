@@ -1,0 +1,117 @@
+﻿@using _7Colors.Services
+@model IEnumerable<_7Colors.Models.Post>
+
+@{
+    ViewData["Title"] = "قائمة مواضيع الصفحة الرئيسية";
+}
+
+<div class="d-flex" id="wrapper">
+    <partial name="_Navbar" />
+    <!-- /#sidebar-wrapper -->
+    <!-- Page Content -->
+    <div id="page-content-wrapper">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-lg-9">
+                    <h4 class="text-info">@ViewData["Title"]</h4>
+                </div>
+                <div class="col-lg-3">
+                    <a asp-action="Create" class="btn"><i class="fa fa-plus"></i>&nbsp; إضافة</a>
+                </div>
+            </div>
+            <br />
+            <div>
+                <table class="table table-striped border" id="myTable">
+                    <thead>
+                        <tr class="table-info">
+                            <th>@Html.DisplayNameFor(c => c.Title)</th>
+                            <th>@Html.DisplayNameFor(c => c.Description)</th>
+                            <th>الصور</th>
+                            <th>@Html.DisplayNameFor(c => c.Created)</th>
+                            <th width="140px">خيارات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@item.Title</td>
+                                @if (item.Description!.Count() > 100)
+                                {
+                                    <td>
+                                        <a href="#Modal" data-bs-toggle="modal" data-bs-target="#Modal"
+                                           data-text="@item.Description" data-title="@item.Title" class="show">نص الموضوع</a>
+                                    </td>
+                                }
+                                else
+                                {
+                                    <td>@item.Description</td>
+                                }
+                                <td>
+                                    <a asp-controller="Images" asp-action="Index" asp-route-id="@item.Id">قائمة صور الموضوع</a>
+                                    (@item.Images.Count().ToString().ConvertNumerals())
+                                </td>
+                                <td>@item.Created.Date.ToString("yyyy/MM/dd").ConvertNumerals()</td>
+                                <partial name="_Buttons" model="@item.Id" />
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <!-- /#wrapper -->
+</div>
+<div class="modal" tabindex="-1" id="Modal">
+    <div class="modal-dialog modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn" data-bs-dismiss="modal">إغلاق</button>
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts {
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#myTable').DataTable({
+                language: {
+                    url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/ar.json',
+                },
+            });
+            $(document).on('click', 'a.show', function () {
+                let tx = $(this).attr("data-text");
+                let tl = $(this).attr("data-title");
+                // console.log(t);
+                $("#Modal div.modal-body p").text(tx);
+                $("#Modal h5.modal-title").text(tl);
+                $("#Modal").show();
+            })
+        })
+        $('#Modal').on('hidden.bs.modal', function () {
+            $("#Modal div.modal-body p").text("")
+            $("#Modal h5.modal-title").text("");
+        })
+        $(function () {
+            var create = '@TempData["create"]'
+            if (create != '') {
+                alertify.success(create);
+            }
+            var edit = '@TempData["edit"]'
+            if (edit != '') {
+                alertify.success(edit);
+            }
+            var del = '@TempData["delete"]'
+            if (del != '') {
+                alertify.error(del);
+            }
+        })
+    </script>
+}

@@ -1,28 +1,16 @@
-﻿@using _7Colors.Utility
-@model IEnumerable<_7Colors.Models.Image>
-
-@if (ViewBag.type == "allG")
-{
+﻿@model IEnumerable<_7Colors.Models.Image>
+@{
     ViewData["Title"] = "قائمة صور الصفحة الرئيسية";
-}
-else
-{
-    ViewData["TitleIn"] = "قائمة صور مجموعة \n".Replace("\n", "<br>") + ViewBag.type;
-    ViewData["Title"] = "قائمة صور مجموعة "+ ViewBag.type;
 }
 <div class="d-flex" id="wrapper">
     <partial name="_Navbar" />
     <!-- /#sidebar-wrapper -->
     <!-- Page Content -->
     <div id="page-content-wrapper">
-        @* <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
-        <button class="btn btn-primary" id="menu-toggle">Toggle Menu</button>
-        <a class="btn btn-warning float-right" asp-area="Admin" asp-controller="Products" asp-action="Create">Add-Product</a>
-        </nav> *@
         <div class="container-fluid">
             <div class="row">
                 <div class="col-lg-6">
-                    <h4 class="text-info">@Html.Raw(ViewData["TitleIn"])</h4>
+                    <h4 class="text-info">@ViewData["Title"]</h4>
                 </div>
                 <div class="col-lg-6">
                     <a asp-action="Create" class="btn"><i class="fa fa-plus"></i>&nbsp; إضافة</a>
@@ -35,11 +23,8 @@ else
                         <tr class="table-info">
                             <th>@Html.DisplayNameFor(c => c.Title)</th>
                             <th>@Html.DisplayNameFor(c => c.Description)</th>
-                            <th>@Html.DisplayNameFor(c=>c.Url)</th>
-                            @if (ViewBag.type == "allG" )
-                            {
-                                <th>@Html.DisplayNameFor(c => c.GroupId) </th>
-                            }
+                            <th>@Html.DisplayNameFor(c => c.Url)</th>
+                            <th>@Html.DisplayNameFor(c => c.PostId) </th>
                             <th>@Html.DisplayNameFor(c => c.IsPublished)</th>
                             <th width="140px">خيارات</th>
                         </tr>
@@ -54,11 +39,8 @@ else
                                 "var(--bs-table-bg)" : "darksalmon")">
                                     <img src="@item.Url" />
                                 </td>
+                                <td>@item.Post?.Title</td>
                                 <td>@item.IsPublished.ConvertLogic()</td>
-                                @if (ViewBag.type == "allG")
-                                {
-                                    <td>@item.Group?.Title</td>
-                                }
                                 <partial name="_Buttons" model="@item.Id" />
                             </tr>
                         }
@@ -70,8 +52,9 @@ else
     <!-- /#wrapper -->
 </div>
 
-@section scripts{
-    <script type="text/javascript">    
+@section scripts {
+    <script src="~/js/IndexTable.js"></script>
+    <script type="text/javascript">
         $(function () {
             var create = '@TempData["create"]'
             if (create != '') {
