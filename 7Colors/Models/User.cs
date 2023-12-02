@@ -9,79 +9,63 @@ namespace _7Colors.Models
 {
     public class User
     {
-        [Required]
-        [Display(Name = "المعرف")]
-        public int Id { get; set; }
+        public User()
+        {
+        }
+        public User(string nameidentifier, string name, string givenName, string surname, string email)
+        {
+            NameIdentifier = nameidentifier;
+            Name = name;
+            GivenName = givenName;
+            Surname = surname;
+            Email = email;
+            Age = 3;
+            ParentEmail = "-";
+            Phone = "05";
+            ParentPhone = "05";
+            StreetAddress = "-";
+            City = "-";
+            Neighborhood = "-";
+            PostalCode = 10000;
+            Role = "Student";
+            Registered = false;
+            Orders = new List<OrderHeader>();
+            LockoutEnd =  new DateTimeOffset();
+        }
 
-        [Required]
-        [Display(Name = " المعرف")]
-        public string? Nameidentifier { get; set; }
+        [Key]
+        public string NameIdentifier { get; set; }
 
-        [Required(ErrorMessage = "حقل الاسم مطلوب")]
-        [Display(Name = "الاسم")]
-        public string? Name { get; set; }
+        public string Name { get; set; }
 
-        [Required(ErrorMessage = "حقل الاسم الأول مطلوب")]
-        [Display(Name = "الاسم الأول")]
-        public string? GivenName { get; set; }
+        public string GivenName { get; set; }
 
-        [Required(ErrorMessage = "حقل اسم العائلة مطلوب")]
-        [Display(Name = "اسم العائلة")]
-        public string? Surname { get; set; }
+        public string Surname { get; set; }
 
-        [Required(ErrorMessage = "حقل البريد الالكتروني مطلوب")]
-        [Display(Name = " البريد الالكتروني")]
-        public string? Email { get; set; }
+        public string Email { get; set; }
 
-        [Required(ErrorMessage = "حقل الرقم مطلوب")]
-        [Display(Name = "الرقم")]
-        [RegularExpression("/^(05)([0-9]{8})$/", ErrorMessage = "الرقم يبدأ ب 05")]
-        public string? Phone { get; set; }
+        public string Phone { get; set; }
 
-        [Required(ErrorMessage = "حقل البريد الالكتروني لولي الأمر مطلوب")]
-        [Remote("NotEqualEmail", "Home", AdditionalFields = "Email", 
-            ErrorMessage = "بريد ولي الأمر يجب أن لا يطابق بريد المستخدم", 
-            HttpMethod = "post")]
-        [Display(Name = " بريد لولي الأمر")]
-        public string? ParentEmail { get; set; }
+        public string ParentEmail { get; set; }
 
-        [Required(ErrorMessage = "حقل رقم ولي الأمر مطلوب")]
-        [Display(Name = "رقم ولي الأمر")]
-        
-        [Remote("NotEqualPhone", "Home", 
-            AdditionalFields = "Phone",
-            ErrorMessage = "رقم ولي الأمر يجب أن لا يطابق رقم المستخدم", 
-            HttpMethod = "post")]
-        [RegularExpression("/^(05)([0-9]{8})$/", ErrorMessage = "الرقم يبدأ ب 05")]
-        public string? ParentPhone { get; set; }
+        public string ParentPhone { get; set; }
 
-        [Required(ErrorMessage = "حقل الشارع مطلوب")]
-        [Display(Name = "الشارع")]
-        public string? StreetAddress { get; set; }
+        public string StreetAddress { get; set; }
 
-        [Required(ErrorMessage = "حقل الحي مطلوب")]
-        [Display(Name = "الحي")]
-        public string? Neighborhood { get; set; }
+        public string Neighborhood { get; set; }
 
-        [Required(ErrorMessage = "حقل المدينة مطلوب")]
-        [Display(Name = "المدينة")]
-        public string? City { get; set; }
-       
-        [Display(Name = "الرمز البريدي")]
-        [Range(10000, 99999)]
+        public string City { get; set; }
+
         public int PostalCode { get; set; }
 
-        [Required(ErrorMessage = "حقل العمر مطلوب")]
-        [Display(Name = "العمر")]
-        [Range(3, 100 , ErrorMessage ="العمر من 3 وما فوق")]
         public int Age { get; set; }
 
-        //[Required(ErrorMessage = "حقل الدور مطلوب")]
-        [Display(Name = "الدور")]
-        [ValidateNever]
-        public string? Role { get; set; }
+        public string Role { get; set; }
 
-        [ValidateNever]
         public bool Registered { get; set; }
+
+        public DateTimeOffset LockoutEnd { get; set; }
+
+        public virtual IEnumerable<OrderHeader> Orders { get; set; }
     }
 }

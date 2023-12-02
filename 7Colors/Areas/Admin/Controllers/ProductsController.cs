@@ -1,52 +1,58 @@
 ﻿using _7Colors.Data;
+using _7Colors.Data.IRepository;
+using _7Colors.Data.Repository;
 using _7Colors.Models;
+using _7Colors.ViewModels;
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting;
 
 namespace _7Colors.Areas.Admin.Controllers
 {
     [Area("Admin")]
     public class ProductsController : Controller
     {
-        private readonly AppDbContext context;
-        private readonly IWebHostEnvironment webHost;
+        private readonly IUnitOfWork unitOfWork;
+        private readonly IWebHostEnvironment webHost;     
         
-        public ProductsController(AppDbContext context, IWebHostEnvironment webHost)
+        public ProductsController(IUnitOfWork unitOfWork, IWebHostEnvironment hostEnvironment)
         {
-            this.context = context;
-            this.webHost = webHost;
+            this.unitOfWork = unitOfWork;
+            webHost = hostEnvironment;
         }
-
         public IActionResult Index()
         {
-            return View(context.Products.Include(p => p.ProductType).Include(p => p.SpecialTag).ToList());
+            var product = unitOfWork.Product.GetAll(includeProperties: "ProductType,SpecialTag");
+            return View(product);           
         }
         [HttpGet]
         public IActionResult Create()
         {
-            ViewData["TypeId"] = new SelectList(context.ProductTypes.ToList(), "Id", "Type");
-            ViewData["TagId"] = new SelectList(context.SpecialTags.ToList(), "Id", "Name");
+            ViewData["TypeId"] = new SelectList(unitOfWork.ProductType.GetAll(), "Id", "Type");
+            ViewData["TagId"] = new SelectList(unitOfWork.SpecialTag.GetAll(), "Id", "Name");
             return View();
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Product pro, IFormFile Image)
+        public IActionResult Create(Product pro, IFormFile Image)
         {
-            var existedPro = context.Products.FirstOrDefault(c => c.Name == pro.Name & c.Price == pro.Price);
+            var types  = new SelectList(unitOfWork.ProductType.GetAll(), "Id", "Type");
+            var tags = new SelectList(unitOfWork.SpecialTag.GetAll(), "Id", "Name");
+            var existedPro = unitOfWork.Product.GetFirstOrDefault(c => c.Name == pro.Name & c.Price == pro.Price);
             if (existedPro != null)
             {
                 ViewBag.message = "هذا المنتج موجود مسبقاً";
-                ViewData["TypeId"] = new SelectList(context.ProductTypes.ToList(), "Id", "Type");
-                ViewData["TagId"] = new SelectList(context.SpecialTags.ToList(), "Id", "Name");
+                ViewData["TypeId"] = types;
+                ViewData["TagId"] = tags;
                 return View(pro);
             }
             if (Image != null)
             {
                 var name = Path.Combine(webHost.WebRootPath + "/images", Path.GetFileName(Image.FileName));
                 Image.CopyTo(new FileStream(name, FileMode.Create));
-                pro.Image = "/images/" + Image.FileName;                
+                pro.Image = "/images/" + Image.FileName;
             }
             if (Image == null)
             {
@@ -54,27 +60,27 @@ namespace _7Colors.Areas.Admin.Controllers
             }
             if (ModelState.IsValid)
             {
-                context.Products.Add(pro);
-                await context.SaveChangesAsync();
+                unitOfWork.Product.Add(pro);
+                unitOfWork.Save();
                 TempData["Create"] = "لقد تم إضافة المنتج";
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["TypeId"] = new SelectList(context.ProductTypes.ToList(), "Id", "Type");
-            ViewData["TagId"] = new SelectList(context.SpecialTags.ToList(), "Id", "Name");
+            ViewData["TypeId"] = types;
+            ViewData["TagId"] = tags;
             return View(pro);
         }
 
 
         [HttpGet]
-        public IActionResult Edit(int? Id)
+        public IActionResult Edit(int? id)
         {
-            ViewData["TypeId"] = new SelectList(context.ProductTypes.ToList(), "Id", "Type");
-            ViewData["TagId"] = new SelectList(context.SpecialTags.ToList(), "Id", "Name");
-            if (Id == null)
+            ViewData["TypeId"] = new SelectList(unitOfWork.ProductType.GetAll(), "Id", "Type");
+            ViewData["TagId"] = new SelectList(unitOfWork.SpecialTag.GetAll(), "Id", "Name");
+            if (id == null)
             {
                 return NotFound();
             }
-            var pro = context.Products.Include(c => c.ProductType).Include(c => c.SpecialTag).FirstOrDefault(c => c.Id == Id);
+            var pro = unitOfWork.Product.GetFirstOrDefault(c => c.Id == id , "ProductType, SpecialTag");
             if (pro == null)
             {
                 return NotFound();
@@ -85,53 +91,50 @@ namespace _7Colors.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]       
-        public async Task<IActionResult> Edit(Product pro, IFormFile image)
+        public async Task<IActionResult> Edit(Product pro, IFormFile Image)
         {          
-            if (image != null)
+            if (Image != null)
             {
-                var name = Path.Combine(webHost.WebRootPath + "/images", Path.GetFileName(image.FileName));
-                await image.CopyToAsync(new FileStream(name, FileMode.Create));
-                pro.Image = "/images/" + image.FileName;              
-            }            
+                var name = Path.Combine(webHost.WebRootPath + "/images", Path.GetFileName(Image.FileName));
+                await Image.CopyToAsync(new FileStream(name, FileMode.Create));
+                pro.Image = "/images/" + Image.FileName;              
+            }
+            if (Image == null)
+            {
+                pro.Image = "/images/noimage.PNG";
+            }
             if (ModelState.IsValid)
             {
-                context.Products.Update(pro);
-                await context.SaveChangesAsync();
+                unitOfWork.Product.Update(pro);
+                unitOfWork.Save();
                 TempData["Edit"] = "لقد تم تعديل المنتج";
                 return RedirectToAction(nameof(Index));
             }
             return View(pro);
         }
         [HttpGet]
-        public IActionResult Details(int? Id)
+        public IActionResult Details(int? id)
         {
-            if (Id == null)
+            if (id == null)
             {
                 return NotFound();
             }
-            var pro = context.Products.Include(c => c.ProductType).Include(c => c.SpecialTag).FirstOrDefault(c => c.Id == Id);
+            var pro = unitOfWork.Product.GetFirstOrDefault(c => c.Id == id, "ProductType, SpecialTag");
             if (pro == null)
             {
                 return NotFound();
             }
             return View(pro);
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Details(Product pro)
-        {
-            return RedirectToAction(nameof(Edit));
         }
 
         [HttpGet]
-        public IActionResult Delete(int? Id)
+        public IActionResult Delete(int? id)
         {
-            if (Id == null)
+            if (id == null)
             {
                 return NotFound();
             }
-            var pro = context.Products.Include(c => c.ProductType).Include(c => c.SpecialTag).FirstOrDefault(c => c.Id == Id);
+            var pro = unitOfWork.Product.GetFirstOrDefault(c => c.Id == id, "ProductType, SpecialTag");
             if (pro == null)
             {
                 return NotFound();
@@ -140,32 +143,63 @@ namespace _7Colors.Areas.Admin.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Delete(int? Id, Product pro)
+        public  IActionResult Delete(int? id, Product pro)
         {
-            if (Id == null)
+            if (id == null)
             {
                 return NotFound();
             }
-            if (Id != pro.Id)
+            if (id != pro.Id)
             {
                 return NotFound();
             }
-            var p = context.Products.FirstOrDefault(c => c.Id == Id);
+            var p = unitOfWork.Product.GetFirstOrDefault(c => c.Id == id);
             if (p == null)
             {
                 return NotFound();
             }
             if (ModelState.IsValid)
             {
-                context.Products.Remove(p);
-                await context.SaveChangesAsync();
+                unitOfWork.Product.Remove(p);
+                unitOfWork.Save();
                 TempData["Delete"] = "لقد تم حذف المنتج";
                 return RedirectToAction(nameof(Index));
             }
             return View(p);
         }
-        #region MyRegion
+
+        #region API CALLS
+        [HttpGet]
+        public IActionResult GetAll()
+        {
+            var productList = unitOfWork.Product.GetAll(includeProperties: "ProductType,SpecialTag");
+            return Json(new { data = productList });
+        }
+
+        //POST
+        //[HttpDelete]
+        //public IActionResult Delete(int? id)
+        //{
+        //    var obj = unitOfWork.Product.GetFirstOrDefault(u => u.Id == id);
+        //    if (obj == null)
+        //    {
+        //        return Json(new { success = false, message = "خطأ في عملية الحذف" });
+        //    }
+
+        //    var oldImagePath = Path.Combine(hostEnvironment.WebRootPath, obj.Image!.TrimStart('\\'));
+        //    if (System.IO.File.Exists(oldImagePath))
+        //    {
+        //        System.IO.File.Delete(oldImagePath);
+        //    }
+
+        //    unitOfWork.Product.Remove(obj);
+        //    unitOfWork.Save();
+        //    return Json(new { success = true, message = "تم الحذف بنجاح" });
+
+        //}
+
 
         #endregion
     }
 }
+

@@ -4,16 +4,6 @@
 @using System.Net.Http
 @using Microsoft.AspNetCore.Http
 @inject IHttpContextAccessor HttpContextAccessor
-@{
-    var userRole = HttpContextAccessor.HttpContext!.Session.GetString("roleName");
-    int count = 0;
-    List<Product> products = HttpContextAccessor.HttpContext.Session.Get<List<Product>>("products");
-    if (products == null)
-    {
-        products = new List<Product>();
-    }
-    count = products.Count();   
-}
 
 <!DOCTYPE html>
 <html dir="rtl" lang="ar">
@@ -21,6 +11,11 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - الألوان السبعة</title>
+    <meta name="Keywords" content="@ViewBag.Keywords" />
+    <meta name="Keywords" content="الألوان السبعة , متجر , كتب , دورات , نشاط , تدريب , طفل" />
+    <meta name="author" content="Soua'ad Azem" />
+    <meta name="description" content="مؤسسة الألوان السبعة للتدريب و الارتقاء بالطفل" />
+    <meta name="google-signin-client_id" content="302757684814-cdpg8gaiaf9kjpnf4e8sshu66mnotkdj.apps.googleusercontent.com">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.rtl.min.css" />
     <link rel="text/plain" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap-theme.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -28,15 +23,13 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css" />
     <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.dataTables.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.13.2/themes/base/jquery-ui.min.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.js"></script>
 
-    @*   <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-    *@
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
+
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link runat="server" rel="shortcut icon" href="~/favicon.ico" type="image/x-icon" />
     <link runat="server" rel="icon" href="~/favicon.ico" type="image/ico" />
-   
+
 </head>
 <body>
     <header>
@@ -59,14 +52,19 @@
                             <a class="nav-link text-dark" asp-area="Course" asp-controller="Home" asp-action="Index">الدورات التعليمية</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-controller="Home" asp-action="AboutUs">من نحن</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="AboutUs">من نحن</a>
                         </li>
                         <li class="nav-item">
+                            <a class="nav-link  text-dark" asp-area="ECommerce" asp-controller="Cart" asp-action="Index">
+                                @await Component.InvokeAsync("ShoppingCart")
+                            </a>
+                        </li>
+                        @* <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="ECommerce" asp-controller="Home" asp-action="Cart">
                                 <i class="fa fa-shopping-cart"></i>
                                 (@count)
                             </a>
-                        </li>
+                        </li> *@
                         <partial name="_Login"></partial>
                     </ul>
                 </div>
@@ -84,7 +82,7 @@
         <div class="container">
             <div class="box socials">
                 <h6 class="title">تابعونا</h6>
-                <div class="ftrSocial">
+                <div class="Social">
                     <ul>
                         <li>
                             <div class="ftrSocialIcon">
@@ -130,6 +128,11 @@
                                 </a>
                             </div>
                         </li>
+                        <li>
+                            <div class="ftrSocialIcon">
+                                <a href="/Messages/New"><i class="fa fa-envelope"></i></a>
+                            </div>
+                        </li>
                     </ul>
                 </div>
             </div>
@@ -143,19 +146,16 @@
     @* script *@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://apis.google.com/js/platform.js" async defer></script>
     <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/alertify.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
     <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
     <script src="https://unpkg.com/isotope-layout@3/dist/isotope.pkgd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/jquery.magnific-popup.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootbox.js/5.5.2/bootbox.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.js"></script>
-    @*     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>*@
+    
     <script src="~/js/site.js"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
- 

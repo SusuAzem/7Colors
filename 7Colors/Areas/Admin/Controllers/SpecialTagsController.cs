@@ -37,13 +37,13 @@ namespace _7Colors.Areas.Admin.Controllers
             return View(tag);
         }
         [HttpGet]
-        public IActionResult Edit(int? Id)
+        public IActionResult Edit(int? id)
         {
-            if (Id == null)
+            if (id == null)
             {
                 return NotFound();
             }
-            var tag = context.SpecialTags.Find(Id);
+            var tag = context.SpecialTags.Find(id);
             if (tag == null)
             {
                 return NotFound();
@@ -64,13 +64,13 @@ namespace _7Colors.Areas.Admin.Controllers
             return View(tag);
         }
         [HttpGet]
-        public IActionResult Details(int? Id)
+        public IActionResult Details(int? id)
         {
-            if (Id == null)
+            if (id == null)
             {
                 return NotFound();
             }
-            var tag = context.SpecialTags.Find(Id);
+            var tag = context.SpecialTags.Find(id);
             if (tag == null)
             {
                 return NotFound();
@@ -78,21 +78,15 @@ namespace _7Colors.Areas.Admin.Controllers
             return View(tag);
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Details(SpecialTag tag)
-        {           
-             return RedirectToAction(nameof(Edit));          
-        }
 
         [HttpGet]
-        public IActionResult Delete(int? Id)
+        public IActionResult Delete(int? id)
         {
-            if (Id == null)
+            if (id == null)
             {
                 return NotFound();
             }
-            var tag = context.SpecialTags.FirstOrDefault(t=>t.Id == Id);
+            var tag = context.SpecialTags.FirstOrDefault(t=>t.Id == id);
             if (tag == null)
             {
                 return NotFound();
@@ -101,17 +95,17 @@ namespace _7Colors.Areas.Admin.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Delete(int? Id, SpecialTag stag)
+        public async Task<IActionResult> Delete(int? id, SpecialTag stag)
         {
-            if (Id == null)
+            if (id == null)
             {
                 return NotFound();
             }
-            if (Id != stag.Id)
+            if (id != stag.Id)
             {
                 return NotFound();
             }
-            var tag = context.SpecialTags.Find(Id);
+            var tag = context.SpecialTags.Find(id);
             if (tag == null)
             {
                 return NotFound();

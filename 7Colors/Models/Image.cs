@@ -10,28 +10,17 @@ namespace _7Colors.Models
     {
         public int Id { get; set; }
 
-        //[Required(ErrorMessage = "حقل الصورة مطلوب")]
-        [Display(Name = "الصورة")]
-        public string? Url { get; set; } = "";
+        public string? Url { get; set; } = "-";
 
-        [Required(ErrorMessage = "حقل الوصف مطلوب")]
-        [Display(Name = "الوصف")]
         public string? Description { get; set; }
 
-        [Required(ErrorMessage = "حقل العنوان مطلوب")]
-        [Display(Name = "عنوان الصورة")]
         public string? Title { get; set; }
 
-        [Required(ErrorMessage = "حقل عرض الصورة مطلوب")]
-        [Display(Name = "عرض الصورة؟")]
         public bool IsPublished { get; set; }
 
-        [Required(ErrorMessage = "حقل المجموعة مطلوب")]
-        [Display(Name = "الموضوع")]
         [ForeignKey("Post")]
         public int PostId { get; set; }
-
         [ForeignKey("PostId")]
-        public virtual Post Post { get; set; } = null!;
+        public virtual Post? Post { get; set; }
     }
 }

@@ -3,32 +3,25 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-
-using System.Diagnostics;
 using Microsoft.AspNetCore.Authentication.Google;
-using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
 using _7Colors.Data;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Newtonsoft.Json.Linq;
-using System.ComponentModel.DataAnnotations;
 using _7Colors.Services;
+using _7Colors.Data.IRepository;
+using _7Colors.ViewModels;
 
 namespace _7Colors.Controllers
 {
     public class AccountController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        private readonly AppDbContext context;
+        private readonly IUnitOfWork unitOfWork;
         private readonly IEmailSender sender;
 
-        public AccountController(ILogger<HomeController> logger, AppDbContext context, IEmailSender sender)
+        public AccountController(ILogger<HomeController> logger, IUnitOfWork unitOfWork, IEmailSender sender)
         {
             _logger = logger;
-            this.context = context;
+            this.unitOfWork = unitOfWork;
             this.sender = sender;
         }
 
@@ -36,41 +29,81 @@ namespace _7Colors.Controllers
         [Authorize]
         public IActionResult Account(string nameId)
         {
-            var user = context.Users.FirstOrDefault(u => u.Nameidentifier == nameId);
-            if (user == null) { return BadRequest(); }
-            if (! user!.Registered)
+            var user = unitOfWork.User.GetFirstOrDefault(u => u.NameIdentifier == nameId);
+            if (user == null)
             {
-                user.Age = 3;
-                user.ParentEmail = "";
-                user.Phone = "05";
-                user.ParentPhone = "05";
-                user.StreetAddress = "";
-                user.City = "";
-                user.Neighborhood = "";
-                user.PostalCode = 10000;
-                return View(user);
+                return RedirectToAction(nameof(Login));
             }
-            return View(user);
+            var vm = new UserViewModel()
+            {
+                Email = user.Email,
+                Name = user.Name,
+                Nameidentifier = user.NameIdentifier,
+                GivenName = user.GivenName,
+                Surname = user.Surname,
+                Role = user.Role,
+                LockoutEnd = user.LockoutEnd,
+            };
+            if (!user!.Registered)
+            {
+                vm.Age = 3;
+                vm.ParentEmail = "";
+                vm.Phone = "05";
+                vm.ParentPhone = "05";
+                vm.StreetAddress = "";
+                vm.City = "";
+                vm.Neighborhood = "";
+                vm.PostalCode = 10000;
+            }
+            else
+            {
+                vm.Age = user.Age;
+                vm.ParentEmail = user.ParentEmail;
+                vm.Phone = user.Phone;
+                vm.ParentPhone = user.ParentPhone;
+                vm.StreetAddress = user.StreetAddress;
+                vm.City = user.City;
+                vm.Neighborhood = user.Neighborhood;
+                vm.PostalCode = user.PostalCode;
+            }
+            return View(vm);
         }
 
         [Authorize]
         [HttpPost]
-        public async Task<IActionResult> Account(User user, string nameId)
+        public async Task<IActionResult> Account(UserViewModel user, string nameId)
         {
+            var exuser = unitOfWork.User.GetFirstOrDefault(u => u.NameIdentifier == nameId);
+            if (exuser == null)
+            {
+                exuser = await UserHalfReg();
+            }
             if (ModelState.IsValid)
             {
-                var exuser = context.Users.FirstOrDefault(u => u.Nameidentifier == nameId);
-
-                if (exuser != null && exuser.Email == user.Email)
+                if (exuser.Email == user.Email && exuser.NameIdentifier == user.Nameidentifier)
                 {
-                    user.Registered = true;
-                    context.Users.Update(user);
-                    await context.SaveChangesAsync();
-                    sender.SendEmail(user.Email!, "الألوان السبعة - تسجيل المستخدم", "لقد تم إكمال تسجيل المعلومات بنجاح");
-                    sender.SendEmail(user.ParentEmail!, "الألوان السبعة - تسجيل معلومات طفلك", "لقد تم إكمال تسجيل معلومات طفلك بنجاح");
+                    exuser.Registered = true;
+                    exuser.StreetAddress = user.StreetAddress!;
+                    exuser.City = user.City!;
+                    exuser.Neighborhood = user.Neighborhood!;
+                    exuser.PostalCode = user.PostalCode;
+                    exuser.Age = user.Age;
+                    exuser.ParentEmail = user.ParentEmail!;
+                    exuser.ParentPhone = user.ParentPhone!;
+                    exuser.Phone = user.Phone!;
+                    if (!User.HasClaim(claim => claim.Type == "Registered"))
+                    {
+                        User.Identities.FirstOrDefault()!.AddClaim(new Claim(type: "Registered", "true"));
+                    }
+                    User.Identities.FirstOrDefault()!.AddClaim(new Claim(type: "Role", exuser.Role!));
+                    unitOfWork.User.Update(exuser);
+                    unitOfWork.Save();
+                    await sender.SendEmailAsync(user.Email!, "الألوان السبعة - تسجيل المستخدم", "لقد تم إكمال تسجيل المعلومات بنجاح");
+                    await sender.SendEmailAsync(user.ParentEmail!, "الألوان السبعة - تسجيل معلومات طفلك", "لقد تم إكمال تسجيل معلومات طفلك بنجاح");
                     TempData["Register"] = "لقد تم إكمال تسجيل المعلومات بنجاح";
                 }
             }
+            User.Identities.FirstOrDefault()!.AddClaim(new Claim(type: "Role", exuser!.Role!));
             TempData["NotRegister"] = "لم يتم إكمال تسجيل المعلومات";
             return RedirectToAction(nameof(Index));
         }
@@ -80,26 +113,25 @@ namespace _7Colors.Controllers
             await HttpContext.ChallengeAsync(GoogleDefaults.AuthenticationScheme, new AuthenticationProperties()
             {
                 RedirectUri = Url.Action("GoogleResponse")
-                //RedirectUri = "/"
             });
         }
         public async Task<IActionResult> GoogleResponse()
         {
             var result = await HttpContext.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-            
+
             var email = result.Principal!.FindFirstValue(ClaimTypes.Email);
-            if (email == "soso.g.f.86@gmail.com")
-                return await AdminReg(result, email);
+            if (email == StringDefault.AdminEmail)
+                return await AdminReg(email);
 
             var nameId = result.Principal!.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (nameId == null)            
-                return BadRequest();            
+            if (nameId == null)
+                return BadRequest();
             if (nameId != null)
             {
-                var exuser = context.Users.FirstOrDefault(u => u.Nameidentifier == nameId);
+                var exuser = unitOfWork.User.GetFirstOrDefault(u => u.NameIdentifier == nameId);
                 if (exuser == null)
                 {
-                    await UserHalfReg();
+                    exuser = await UserHalfReg();
                 }
                 if (exuser != null & !exuser!.Registered)
                 {
@@ -107,55 +139,48 @@ namespace _7Colors.Controllers
                 }
                 if (exuser != null & exuser!.Registered)
                 {
-                    return RedirectToAction(nameof(Index));
+                    User.Identities.FirstOrDefault()!.AddClaim(new Claim(type: "Role", value: exuser.Role!));
+                    return RedirectToAction(nameof(Index), "Home");
                 }
             }
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Index), "Home");
         }
 
-        private async Task UserHalfReg()
+        private async Task<User> UserHalfReg()
         {
-            var user = new User
-            {
-                Nameidentifier = User.FindFirstValue(ClaimTypes.NameIdentifier),
-                Name = User.FindFirstValue(ClaimTypes.Name),
-                GivenName = User.FindFirstValue(ClaimTypes.GivenName),
-                Surname = User.FindFirstValue(ClaimTypes.Surname),
-                Email = User.FindFirstValue(ClaimTypes.Email),
-                Age = 3,
-                ParentEmail = "-",
-                Phone = "05",
-                ParentPhone = "05",
-                StreetAddress = "-",
-                City = "-",
-                Neighborhood = "-",
-                PostalCode = 10000,
-                Role = "Student",
-                Registered = false
-            };
-            context.Users.Add(user);
-            sender.SendEmail(user.Email!, "الألوان السبعة - تسجيل دخول المستخدم", "لقد تم تسجيل دخولك معنا . قم بإكمال إدخال معلوماتك في أقرب وقت");
-            await context.SaveChangesAsync();
+            var user = new User(
+                    nameidentifier: User.FindFirstValue(ClaimTypes.NameIdentifier)!,
+                    name: User.FindFirstValue(ClaimTypes.Name)!,
+                    givenName: User.FindFirstValue(ClaimTypes.GivenName)!,
+                    surname: User.FindFirstValue(ClaimTypes.Surname)!,
+                    email: User.FindFirstValue(ClaimTypes.Email)!);
+            unitOfWork.User.Add(user);
+            await sender.SendEmailAsync(user.Email!, "الألوان السبعة - تسجيل دخول المستخدم", "لقد تم تسجيل دخولك معنا . قم بإكمال إدخال معلوماتك في أقرب وقت");
+            unitOfWork.Save();
             TempData["Login"] = "الرجاء إكمال معلومات التسجيل";
+            return user;
         }
 
-        private async Task<IActionResult> AdminReg(AuthenticateResult result, string? email)
+        private async Task<ActionResult> AdminReg(string? email)
         {
-            var admin = context.Users.FirstOrDefault(u => u.Email == email);
+            var admin = unitOfWork.User.GetFirstOrDefault(u => u.Email == email);
             if (admin == null)
             {
-                admin = new User
+                admin = new User(
+                    nameidentifier: User.FindFirstValue(ClaimTypes.NameIdentifier)!,
+                    name: User.FindFirstValue(ClaimTypes.Name)!,
+                    givenName: User.FindFirstValue(ClaimTypes.GivenName)!,
+                    surname: User.FindFirstValue(ClaimTypes.Surname)!,
+                    email: User.FindFirstValue(ClaimTypes.Email)!)
                 {
-                    Email = email,
-                    Nameidentifier = result.Principal!.FindFirstValue(ClaimTypes.NameIdentifier),
-                    Name = User.FindFirstValue(ClaimTypes.Name),
                     Registered = true,
                     Role = "Admin"
                 };
             }
-            context.Users.Add(admin);
-            await context.SaveChangesAsync();
-            TempData["Register"] = "لقد تم إكمال تسجيل معلومات المسؤول بنجاح";
+            unitOfWork.User.Add(admin);
+            await sender.SendEmailAsync(admin.Email!, "الألوان السبعة - تسجيل دخول المسؤول", " مرحلاً بالأدمن .. لقد تم تسجيل دخولك معنا . قم بإكمال إدخال معلوماتك في أقرب وقت");
+            unitOfWork.Save();
+            TempData["ARegister"] = "لقد تم إكمال تسجيل معلومات المسؤول بنجاح";
             return RedirectToAction(nameof(Index));
         }
 
@@ -163,21 +188,21 @@ namespace _7Colors.Controllers
         public async Task<IActionResult> Logout()
         {
             await HttpContext.SignOutAsync();
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Index), "Home");
         }
 
 
         #region validation
         [HttpPost]
-        public JsonResult NotEqualEmail(string ParentEmail, string  Email)
-        {                    
-             var valid = ParentEmail == Email ? false : true;
-             return Json(valid);
+        public JsonResult NotEqualEmail(string ParentEmail, string Email)
+        {
+            var valid = ParentEmail == Email ? false : true;
+            return Json(valid);
         }
 
         [HttpPost]
         public JsonResult NotEqualPhone(string ParentPhone, string Phone)
-        {           
+        {
             var valid = ParentPhone == Phone ? false : true;
             return Json(valid);
         }

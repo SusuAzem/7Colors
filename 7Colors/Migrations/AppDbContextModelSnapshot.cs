@@ -31,7 +31,6 @@ namespace _7Colors.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsPublished")
@@ -43,7 +42,6 @@ namespace _7Colors.Migrations
                         .HasDefaultValue(0);
 
                     b.Property<string>("Title")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Url")
@@ -76,9 +74,97 @@ namespace _7Colors.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("PhoneNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("TimeSend")
+                        .HasColumnType("datetime2");
+
                     b.HasKey("Id");
 
                     b.ToTable("Messages");
+                });
+
+            modelBuilder.Entity("_7Colors.Models.OrderHeader", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Carrier")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("OrderDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("OrderStatus")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<float>("OrderTotal")
+                        .HasColumnType("real");
+
+                    b.Property<DateTime>("PaymentDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("PaymentDueDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("PaymentIntentId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PaymentStatus")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SessionId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("ShippingDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("TrackingNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserNameIdentifier")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserNameIdentifier");
+
+                    b.ToTable("OrderHeaders");
+                });
+
+            modelBuilder.Entity("_7Colors.Models.OrderItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Count")
+                        .HasColumnType("int");
+
+                    b.Property<float>("ItemsPrice")
+                        .HasColumnType("real");
+
+                    b.Property<int>("OrderHeaderId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrderHeaderId");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("OrderItems");
                 });
 
             modelBuilder.Entity("_7Colors.Models.Post", b =>
@@ -96,7 +182,6 @@ namespace _7Colors.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Title")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -113,6 +198,7 @@ namespace _7Colors.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Image")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsAvailable")
@@ -125,9 +211,9 @@ namespace _7Colors.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<decimal>("Price")
+                    b.Property<float>("Price")
                         .HasPrecision(10, 2)
-                        .HasColumnType("decimal(10,2)");
+                        .HasColumnType("real(10)");
 
                     b.Property<string>("ProductColor")
                         .IsRequired()
@@ -169,6 +255,33 @@ namespace _7Colors.Migrations
                     b.ToTable("ProductTypes");
                 });
 
+            modelBuilder.Entity("_7Colors.Models.ShoppingCartLine", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Count")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserNameIdentifier")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
+
+                    b.HasIndex("UserNameIdentifier");
+
+                    b.ToTable("ShoppingCartLine");
+                });
+
             modelBuilder.Entity("_7Colors.Models.SpecialTag", b =>
                 {
                     b.Property<int>("Id")
@@ -188,11 +301,8 @@ namespace _7Colors.Migrations
 
             modelBuilder.Entity("_7Colors.Models.User", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    b.Property<string>("NameIdentifier")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("Age")
                         .HasColumnType("int");
@@ -209,11 +319,10 @@ namespace _7Colors.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<DateTimeOffset>("LockoutEnd")
+                        .HasColumnType("datetimeoffset");
 
-                    b.Property<string>("Nameidentifier")
+                    b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -240,6 +349,7 @@ namespace _7Colors.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("Role")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("StreetAddress")
@@ -250,7 +360,7 @@ namespace _7Colors.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id");
+                    b.HasKey("NameIdentifier");
 
                     b.ToTable("Users");
                 });
@@ -264,6 +374,36 @@ namespace _7Colors.Migrations
                         .IsRequired();
 
                     b.Navigation("Post");
+                });
+
+            modelBuilder.Entity("_7Colors.Models.OrderHeader", b =>
+                {
+                    b.HasOne("_7Colors.Models.User", "User")
+                        .WithMany("Orders")
+                        .HasForeignKey("UserNameIdentifier")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("_7Colors.Models.OrderItem", b =>
+                {
+                    b.HasOne("_7Colors.Models.OrderHeader", "OrderHeader")
+                        .WithMany("OrderItems")
+                        .HasForeignKey("OrderHeaderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("_7Colors.Models.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("OrderHeader");
+
+                    b.Navigation("Product");
                 });
 
             modelBuilder.Entity("_7Colors.Models.Product", b =>
@@ -285,6 +425,30 @@ namespace _7Colors.Migrations
                     b.Navigation("SpecialTag");
                 });
 
+            modelBuilder.Entity("_7Colors.Models.ShoppingCartLine", b =>
+                {
+                    b.HasOne("_7Colors.Models.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("_7Colors.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserNameIdentifier")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Product");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("_7Colors.Models.OrderHeader", b =>
+                {
+                    b.Navigation("OrderItems");
+                });
+
             modelBuilder.Entity("_7Colors.Models.Post", b =>
                 {
                     b.Navigation("Images");
@@ -298,6 +462,11 @@ namespace _7Colors.Migrations
             modelBuilder.Entity("_7Colors.Models.SpecialTag", b =>
                 {
                     b.Navigation("Products");
+                });
+
+            modelBuilder.Entity("_7Colors.Models.User", b =>
+                {
+                    b.Navigation("Orders");
                 });
 #pragma warning restore 612, 618
         }

@@ -15,6 +15,10 @@ namespace _7Colors.Controllers
             _context = context;
         }
 
+        public IActionResult Index()
+        {
+            return View();
+        }
         protected override void Dispose(bool disposing)
         {
             _context.Dispose();
@@ -22,12 +26,13 @@ namespace _7Colors.Controllers
 
         public IActionResult New()
         {
-            var viewModel = new MessagesViewModel();
+            var viewModel = new MessageViewModel() { TimeSend= DateTime.Now};
+
             return View(viewModel);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] Message message)
+        public async Task<IActionResult> Create([FromBody] MessageViewModel message)
         {
             if (!ModelState.IsValid)
             {
@@ -35,11 +40,20 @@ namespace _7Colors.Controllers
             }
             else
             {
-                _context.Messages.Add(message);
+                var ms = new Message()
+                {
+                    Email = message.Email,
+                    Content = message.Content,
+                    PhoneNumber = message.PhoneNumber,
+                    Name = message.Name,
+                    TimeSend = DateTime.Now,
+                };
+                _context.Messages.Add(ms);
                 await _context.SaveChangesAsync();
                 return Json(new { IsSuccess = "redirect", description = Url.Action("Home", "Index", new { id = message.Id }), message });
             }
 
-        }
+        }                        
+        
     }
 }

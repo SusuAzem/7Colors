@@ -12,6 +12,7 @@ namespace _7Colors.Models
         [Required(ErrorMessage = "حقل العلامة الخاصة مطلوب")]
         [Display(Name = "العلامة الخاصة - tag")]
         public string? Name { get; set; }
+        
         [JsonIgnore]
         public virtual IEnumerable<Product> Products { get; set; } = new List<Product>();
 

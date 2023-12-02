@@ -4,81 +4,52 @@
 @model IEnumerable<_7Colors.Models.Product>
 @{
     ViewData["Title"] = "المتجر الالكتروني";
-    var pro = Model;
 }
-<!-- Showcase Area -->
-<h1>مرحباً بكم في المتجر الالتروني</h1>
+<h1>مرحباً بكم في المتجر الالكتروني</h1>
 
 <section id="newDeals">
     <div class="container">
-        <div class="row">
-            <div class="col-lg-12">
-                <h1 class="heading"> <span>كل المنتجات</span></h1>
-            </div>
+        <div class="col-lg-12">
+            <h1 class="heading"> <span>كل المنتجات</span></h1>
         </div>
-        <div id="searchWrapper" class="pt-4">
-            <input type="text" name="searchBar" id="searchBar" placeholder="البحث عن منتج" />
-            <form>
-                <select>
-                    <option value="1">افتراضي</option>
-                    <option value="2">ترتيب حسب السعر</option>
-                    <option value="3">ترتيب حسب الشهرة</option>
-                    <option value="4">ترتيب حسب المبيعات</option>
-                    <option value="5">ترتيب حسب التقييم</option>
-                </select>
-                @*                 <span><i class='bx bx-chevron-down'></i></span>
-                *@
-            </form>
-        </div>
-    </div>
-    <div id="newProducts" class="row pt-4">
-        @foreach (var product in Model)
-        {
-          <div class="col-md-4">
+        <div class="row newDeals ">
+            <!-- Sidebar Widgets Column -->
+            <div class="col-md-3 deals">
                 <div class="card">
-                    <div class="cardHeader">
-                        <ul class="icons">
-                            <li><i class="fa fa-heart"></i></li>
-                            <li>
-                                <a href="cart.html">
-                                    <i class="fa fa-shopping-bag"></i>
-                                </a>
-                            </li>
-                            <li> <i class="fa fa-search"></i></li>
-                        </ul>
-                        <img class="card-img-top" src="@product.Image" alt="card image">
-                    </div>
                     <div class="card-body">
-                        <h5>@product.Name</h5>
-                        <h6>@product.ProductType!.Type</h6>
-                        <h7 class="price">السعر: @product.Price.ToString().ConvertNumerals() رس</h7>
-                        <a asp-action="Detail" class="btn btn-primary" asp-route-id="@product.Id">تفاصيل المنتج</a>
-                        <div class="rating">
-                            <i class="fa fa-star-o"></i>
-                            <i class="fa fa-star-o"></i>
-                            <i class="fa fa-star-o"></i>
-                            <i class="fa fa-star-o"></i>
-                            <i class="fa fa-star-o"></i>
+                        <div class="input-group" id="searchWrapper">
+                            <form action="/" onsubmit="return false">
+                                <input type="text" class="form-control" name="searchBar" id="searchBar"
+                                       placeholder="ابحث عن .. ">
+                            </form>
                         </div>
                     </div>
-                </div>
+                    <h5>الفئات</h5>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-3 col-sm-6 col-lg-6">
+                                <input class="mybtn btn filter-btn mb-1" data-filter="كل الفئات" value="كل الفئات" />
+                                                                    
+                                @foreach (ProductType item in ViewBag.Types)
+                                {
+                                    <input class="mybtn btn filter-btn mb-1" data-filter="@item.Type" value=" @item.Type" />
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>                
             </div>
-        }
-    </div>
-    <div id="newProducts2" class="row pt-4"></div>
-    <div id="btnContainer"></div>
-</section>
-<!-- cta area -->
-@* <section class="cta">
-    <div class="cta-content">
-        <div class="container">
-            <h2>Free Shipping With Your Order<br>Start Today</h2>
-            <a href="contact.html" class="btn btn-primary">Lets Get Started</a>
+            <div id="newProducts" class="row pt-4 col-9"></div>
+            <div id="btnContainer"></div>
         </div>
     </div>
-</section> *@
+</section>
 
 
 @section scripts {
     <script src="~/js/LoadPro.js"></script>
+
+    <script>
+
+    </script>
 }

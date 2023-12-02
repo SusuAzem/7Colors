@@ -1,40 +1,57 @@
-const baseURL = "https://localhost:44349/ECommerce/Home/Data";
-const newProduct = document.getElementById("newProducts2");
+const baseURL = "/ECommerce/Home/Data";
+const newProduct = document.getElementById("newProducts");
 const btnContainer = document.getElementById("btnContainer");
+const btns = document.querySelectorAll(".mybtn");
 let products = [];
 let index = 0;
 let pages = [];
-
+const searchBar = document.getElementById("searchBar");
+searchBar.addEventListener("keyup", function (e) {
+    const searchString = e.target.value.toLowerCase();
+    const filterProducts = products.filter((product) => {
+        return (
+            product.name.toLowerCase().includes(searchString) ||
+            product.type.toLowerCase().includes(searchString)
+        );
+    });
+    displayProducts(filterProducts);
+});
+//const search
+for (let i = 0; i < btns.length; i++) {
+    btns[i].addEventListener("click", (e) => {
+        e.preventDefault();
+        const filter = e.target.dataset.filter;
+        console.log(filter);
+        const filterProducts = products.filter((product) => {
+            if (filter === "كل الفئات") {
+                return product.type.toLowerCase();
+            }
+            return product.type.toLowerCase().includes(filter);
+        });
+        displayProducts(filterProducts);
+    });
+}
 const displayProducts = (products) => {
     const htmlTemplate = products
         .map((product) => {
             return `
             <div class="col-md-4">
-                        <div class="card">
+                        <div class="card pro">
                             <div class="cardHeader">
-                                <ul class="icons">
-                                    <li><i class="fa fa-heart"></i></li>
-                                    <li>
-                                        <a href="cart.html">
-                                            <i class="fa fa-shopping-bag"></i>
+                                <ul class="icons">                                    
+                                    <li>                                   
+                                         <a href="/ECommerce/Home/AddToCart/${product.id}">
+                                        <i class="fa fa-shopping-bag"></i>
                                         </a>
                                     </li>
-                                    <li> <i class="fa fa-search"></i></li>
                                 </ul>
                                 <img class="card-img-top" src="${product.img}" alt="card image">
                             </div>
                             <div class="card-body">
                                 <h5>${product.name}</h5>
                                 <h6>${product.type}</h6>
-                                <h7 class="price">السعر: ${product.price}} رس</h7>
-                                <a asp-action="Detail" class="btn btn-primary" asp-route-id="${product.id}">تفاصيل المنتج</a>
-                                <div class="rating">
-                                    <i class="fa fa-star-o"></i>
-                                    <i class="fa fa-star-o"></i>
-                                    <i class="fa fa-star-o"></i>
-                                    <i class="fa fa-star-o"></i>
-                                    <i class="fa fa-star-o"></i>
-                                </div>
+                                <h7 class="price">السعر: ${product.price} رس</h7>
+                                <a href="/ECommerce/Home/Detail/${product.id}" class = "btn">تفاصيل المنتج</a>                                
                             </div>
                         </div>
                     </div>

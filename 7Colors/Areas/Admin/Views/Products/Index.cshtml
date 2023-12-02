@@ -55,13 +55,13 @@
                             <tr>
                                 <td>@item.Name</td>
                                 <td>@item.Price.ToString().ConvertNumerals() رس</td>
-                                <td id="img" style="background-color: @((item.Image != null) ? 
-                                "var(--bs-table-bg)" : "darksalmon")">
+                                <td id="img" style="background-color: @((item.Image!.Contains("noimage")) ? "darksalmon" : "var(--bs-table-bg)")">
                                     <img src="@item.Image" /></td>
                                 <td>@item.ProductColor</td>
                                 <td style="background-color: @(item.IsAvailable? "var(--bs-table-bg)" : "darksalmon")">
-                                    @item.IsAvailable.ConvertLogic()</td>                               
-                                <td>@item.IsPublished.ConvertLogic()</td>
+                                    @item.IsAvailable.ConvertLogic()</td>
+                                <td style="background-color: @(item.IsPublished? "var(--bs-table-bg)" : "darksalmon")">
+                                    @item.IsPublished.ConvertLogic()</td>
                                 <td>@item.ProductType?.Type</td>
                                 <td>@item.SpecialTag?.Name</td>
                                 <partial name="_Buttons" model="@item.Id" />

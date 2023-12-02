@@ -14,7 +14,7 @@
          data-id="@item.Id">
 
         <div class="carousel-indicators">
-            @for (int i = 0; i < item.Images.Count();  i++)
+            @for (int i = 0; i < item.Images.Count(); i++)
             {
                 <button type="button" data-bs-target="#carousel_@item.Id" data-bs-slide-to="@(i)" aria-label="Slide @i+1"
                         class="@(i == 1?  "active" : "")" aria-current="@(i == 1?  "true" : "") ">
@@ -58,24 +58,26 @@
             let caros = document.querySelectorAll("carousel");
             for (let item of caros) {
                 let id = item.getAttribute("data-id");
-                $("#carousel_"${id}).carousel();
-            }            
-            
+                $(`#carousel_${ id }`).carousel();
+            }
         });
         $(function () {
-            var reg = '@TempData["register"]';
+            var reg = '@TempData["register"]'
             if (reg != '') {
                 alertify.success(reg);
             }
-            var nreg = '@TempData["notregister"]';
-            if (nreg != '') {
-                alertify.error(nreg);
+            var areg = '@TempData["aregister"]'
+            if (areg != '') {
+                alertify.success(areg);
             }
-            var login = '@TempData["login"]';
-            if (login != '') {
-                alertify.error(login);
+            var log = '@TempData["login"]'
+            if (log != '') {
+                alertify.success(log);
             }
-        })       
- });
+            var notr = '@TempData["notregister"]'
+            if (notr != '') {
+                alertify.error(notr);
+            }
+        })
     </script>
 }

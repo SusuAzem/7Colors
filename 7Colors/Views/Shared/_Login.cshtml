@@ -10,19 +10,41 @@
 <ul class="navbar-nav loging">
     @if (User.Identity!.IsAuthenticated)
     {
-        <li class="nav-item ">
-            <a class="nav-link text-dark" asp-controller="Home" asp-action="Account" asp-route-nameId="@nameId">
-                مرحباً @User.Identity.Name
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Logout">تسجيل الخروج</a>
-        </li>
+        @if (User.HasClaim("Registered", "true"))
+        {
+            <li class="nav-item ">
+                <a class="nav-link text-dark" asp-controller="Account" asp-action="Account" asp-route-nameId="@nameId">
+                    مرحباً @User.Identity.Name
+                </a>
+            </li>
+        }
+         else
+            {
+            <li class="nav-item ">
+                <a class="nav-link text-color" asp-controller="Account" asp-action="Account" asp-route-nameId="@nameId" title="أكمل بيانات حسابك">
+                    مرحباً @User.Identity.Name
+                </a>
+            </li>
+            }
+            <li class="nav-item">
+            <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Logout" onclick="signOut();">تسجيل الخروج</a>
+            </li>              
     }
     else
     {
         <li class="nav-item">
-            <a class="nav-link text-dark g-signin2" asp-area="" asp-controller="Home" asp-action="Login">تسجيل الدخول</a>
-        </li>
+          @*   <div class="g-signin2" data-onsuccess="onSignIn"> *@
+            <a class="nav-link text-dark " asp-area="" asp-controller="Account" asp-action="Login">تسجيل الدخول</a>
+@*             </div>
+ *@        </li>
     }
 </ul>
+
+@* <script>
+    function signOut() {
+        var auth2 = gapi.auth2.getAuthInstance();
+        auth2.signOut().then(function () {
+            console.log('User signed out.');
+        });
+    }
+</script> *@

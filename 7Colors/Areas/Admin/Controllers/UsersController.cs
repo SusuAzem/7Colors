@@ -28,24 +28,15 @@ namespace _7Colors.Areas.Admin.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetAll(string? filter)
+        public IActionResult GetAll()
         {
-            IEnumerable userList;
-            if (filter!= null)
-            {
-                    userList = context.Users.Where(u => u.Role == filter).Select(
-                   u => new { name = u.Name, email = u.Email, phone = u.Phone, role = u.Role }).ToList();
-            }
-            else
-            {
-                    userList = context.Users.Select(
-                    u => new { name = u.Name, email = u.Email, phone = u.Phone, role = u.Role , id = u.Nameidentifier }).ToList();
-            }                   
+            var userList = context.Users.Select(
+                    u => new { name = u.Name, email = u.Email, phone = u.Phone, role = u.Role , id = u.NameIdentifier }).ToList();                            
             return Json(new { data = userList });
         }
         public async Task<IActionResult> Upgrade(string id)
         {
-            var teacher = context.Users.FirstOrDefault(u => u.Nameidentifier == id);
+            var teacher = context.Users.FirstOrDefault(u => u.NameIdentifier == id);
             if (teacher != null)
             {
                 teacher.Role = "Teacher";
@@ -58,7 +49,7 @@ namespace _7Colors.Areas.Admin.Controllers
         }
         public async Task<IActionResult> Downgrade(string id)
         {
-            var teacher = context.Users.FirstOrDefault(u => u.Nameidentifier == id);
+            var teacher = context.Users.FirstOrDefault(u => u.NameIdentifier == id);
             if (teacher != null)
             {
                 teacher.Role = "Student";
@@ -72,7 +63,7 @@ namespace _7Colors.Areas.Admin.Controllers
 
         public async Task<IActionResult> Block(string id)
         {
-            var teacher = context.Users.FirstOrDefault(u => u.Nameidentifier == id);
+            var teacher = context.Users.FirstOrDefault(u => u.NameIdentifier == id);
             if (teacher != null)
             {
                 context.Users.Remove(teacher);
@@ -81,6 +72,29 @@ namespace _7Colors.Areas.Admin.Controllers
                 return RedirectToAction(nameof(Index));
             }
             return RedirectToAction(nameof(Index));
+        }
+      
+        [HttpPost]
+        public async Task<IActionResult> LockUnlock([FromBody] string id)
+        {
+            var exuser = context.Users.FirstOrDefault(u => u.NameIdentifier == id);
+            if (exuser == null)
+            {
+                return Json(new { success = false, message = "خطأ خلال عملية الحجب" });
+            }
+
+            if  (exuser.LockoutEnd > DateTime.Now)
+            {
+                //user is currently locked, we will unlock them
+                exuser.LockoutEnd = DateTime.Now;
+            }
+            else
+            {
+                exuser.LockoutEnd = DateTime.Now.AddYears(1000);
+            }
+            context.Users.Update(exuser);
+            await context.SaveChangesAsync();
+            return Json(new { success = true, message = "تمت العملية بنجاح" });
         }
     }
 }

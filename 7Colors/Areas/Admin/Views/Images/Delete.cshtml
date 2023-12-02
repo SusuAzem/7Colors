@@ -39,7 +39,7 @@
                             <label asp-for="PostId"></label>
                         </div>
                         <div class="col-8">
-                            <input asp-for="Post.Title" class="form-control" readonly />
+                            <input asp-for="Post!.Title" class="form-control" readonly />
                         </div>
                         <span asp-validation-for="PostId" class="text-danger"></span>
                     </div>

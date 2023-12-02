@@ -1,8 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 using System.Linq;
+using _7Colors.Data.IRepository;
 
-namespace _7Colors.Data
+namespace _7Colors.Data.Repository
 {
     public class Repository<T> : IRepository<T> where T : class
     {
@@ -12,7 +13,7 @@ namespace _7Colors.Data
         public Repository(AppDbContext db)
         {
             _db = db;
-            this.dbSet = _db.Set<T>();
+            dbSet = _db.Set<T>();
         }
         public void Add(T entity)
         {

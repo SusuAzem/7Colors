@@ -1,0 +1,120 @@
+﻿@model _7Colors.ViewModels.ShoppingCartViewModel
+@using Microsoft.Extensions.Options
+@using System.Globalization
+@inject IOptions<_7Colors.Services.StripeSettings> Stripe
+
+<form method="post">
+	<br/>
+	<div class="container">
+		<div class="card">
+			<div class="card-header bg-dark text-light ml-0">
+				<div class=" row container">
+					<div class="col-6">
+						<i class="fa fa-shopping-cart"></i> &nbsp;
+						ملخص الطلب
+					</div>
+					<div class="col-6 text-end">
+						<a asp-action="Index" class="btn btn-outline-info btn-sm">العودة لعربة المشتريات</a>
+					</div>
+				</div>
+			</div>
+			<div class="card-body">
+				<div class="container rounded p-2">
+					<div class="row">
+						<div class="col-12 col-lg-6 pb-4">
+							<div class="row">
+								<h4 class="d-flex justify-content-between align-items-center mb-3">
+									<span class="text-info">تفاصيل الشحن</span>
+								</h4>
+							</div>
+							<div class="row my-1">
+								<div class="col-3">
+									<label>الاسم</label>
+								</div>
+								<div class="col-9">
+									<input asp-for="OrderHeader!.User!.Name" class="form-control" readonly />
+									<span asp-validation-for="OrderHeader!.User!.Name" class="text-danger"></span>
+								</div>
+							</div>
+							<div class="row my-1">
+								<div class="col-3">
+									<label>رقم التواصل</label>
+								</div>
+								<div class="col-9">
+									<input asp-for="OrderHeader!.User!.Phone" class="form-control" readonly/>
+									<span asp-validation-for="OrderHeader!.User!.Phone" class="text-danger"></span>
+								</div>
+							</div>
+							<div class="row my-1">
+								<div class="col-3">
+									<label>الشارع</label>
+								</div>
+								<div class="col-9">
+									<input asp-for="OrderHeader!.User!.StreetAddress" class="form-control" readonly />
+									<span asp-validation-for="OrderHeader!.User!.StreetAddress" class="text-danger"></span>
+								</div>
+							</div>
+							<div class="row my-1">
+								<div class="col-3">
+									<label>المدينة</label>
+								</div>
+								<div class="col-9">
+									<input asp-for="OrderHeader!.User!.City" class="form-control" readonly />
+									<span asp-validation-for="OrderHeader!.User!.City" class="text-danger"></span>
+								</div>
+							</div>
+							<div class="row my-1">
+								<div class="col-3">
+									<label>State</label>
+								</div>								
+							</div>
+							<div class="row my-1">
+								<div class="col-3">
+									<label>الرمز البريدي</label>
+								</div>
+								<div class="col-9">
+									<input asp-for="OrderHeader!.User!.PostalCode" class="form-control" readonly />
+									<span asp-validation-for="OrderHeader!.User!.PostalCode" class="text-danger"></span>
+								</div>
+							</div>
+						</div>
+						<div class="col-12 col-lg-5 offset-lg-1">
+							<h4 class="d-flex justify-content-between align-items-center mb-3">
+								<span class="text-info">عناصر الطلب</span>
+							</h4>
+							<ul class="list-group mb-3">
+								@foreach (var details in Model.ListCart!)
+								{
+									<li class="list-group-item d-flex justify-content-between">
+										<div>
+											<h6 class="my-0">@details.Product!.Name</h6>
+											<small class="text-muted">الكمية @details.Count</small>
+										</div>
+										<span class="text-muted">المجموع الجزئي@(details.LinePrice.ToString("c", new CultureInfo("ar-SA")))</span>
+									</li>
+								}
+								<li class="list-group-item d-flex justify-content-between bg-light">
+									<small class="text-info">المجموع</small>
+									<strong class="text-info">@Model.OrderHeader!.OrderTotal.ToString("c", new CultureInfo("ar-SA"))</strong>
+								</li>
+							</ul>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="card-footer">
+				<div class="row">
+					<div class="col-12 col-md-8 pt-2">
+						<p style="color:maroon; font-size:14px;">
+							موعد الاستلام التقريبي
+							@DateTime.Now.AddDays(7).ToShortDateString() - @DateTime.Now.AddDays(14).ToShortDateString()
+						</p>
+					</div>
+					<div class="col-12 col-md-4">
+						<input type="submit" value="تنفيذ الطلب" class="btn" />
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</form>

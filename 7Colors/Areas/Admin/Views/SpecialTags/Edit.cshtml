@@ -9,14 +9,10 @@
     <partial name="_Navbar" />
     <!-- /#sidebar-wrapper -->
     <!-- Page Content -->
-    <div id="page-content-wrapper">
-        @* <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
-            <button class="btn btn-primary" id="menu-toggle">Toggle Menu</button>
-            <a class="btn btn-warning float-right" asp-area="Admin" asp-controller="ProductTypes" asp-action="Create">Add-ProductTypes</a>
-        </nav> *@
+    <div id="page-content-wrapper">     
         <h4 class="text-info">@ViewData["Title"]</h4>
-        <form asp-action="Edit" method="post">
-            <div class="p4">
+        <form asp-action="Edit" method="post" asp-route-id="@Model.Id">
+            <div class="p4 rounded border row">
                 <input type="hidden" asp-for="Id" />
                 <div asp-validation="ModelOnly" class="text-danger"></div>
                 <div class="form-group row">

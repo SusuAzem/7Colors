@@ -9,14 +9,10 @@
     <!-- /#sidebar-wrapper -->
     <!-- Page Content -->
     <div id="page-content-wrapper">
-        @* <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
-            <button class="btn btn-primary" id="menu-toggle">Toggle Menu</button>
-            <a class="btn btn-warning float-right" asp-area="Admin" asp-controller="Products" asp-action="Create">Add-Product</a>
-        </nav> *@
         <div class="container-fluid">
             <h4 class="text-info">@ViewData["Title"] </h4>
             <form asp-action="Create" method="post" enctype="multipart/form-data">
-                <div class="p-4">
+                <div class="p-4 rounded border row">
                     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                     <h4>@ViewBag.message</h4>
                     <div class="form-group row">
@@ -60,7 +56,7 @@
                             <label asp-for="TypeId"></label>
                         </div>
                         <div class="col-8">
-                            <select asp-for="TypeId" asp-items="ViewBag.TypeId" class="form-control"></select>
+                            <select asp-for="TypeId" asp-items="ViewBag.TypeId" class="form-control"><option disabled selected>--اختر نوع المنتج--</option></select>
 
                         </div>
                         <span asp-validation-for="TypeId" class="text-danger"></span>
@@ -70,7 +66,7 @@
                             <label asp-for="TagId"></label>
                         </div>
                         <div class="col-8">
-                            <select asp-for="TagId" asp-items="@ViewBag.TagId" class="form-control"></select>
+                            <select asp-for="TagId" asp-items="@ViewBag.TagId" class="form-control"><option disabled selected>--اختر العلامة الخاصة--</option></select>
                         </div>
                         <span asp-validation-for="TagId" class="text-danger"></span>
                     </div>

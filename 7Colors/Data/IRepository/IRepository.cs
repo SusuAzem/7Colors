@@ -2,7 +2,7 @@
 
 using System.Linq.Expressions;
 
-namespace _7Colors.Data
+namespace _7Colors.Data.IRepository
 {
     public interface IRepository<T> where T : class
     {

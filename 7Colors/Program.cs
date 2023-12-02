@@ -14,6 +14,9 @@ using System.Security.Claims;
 using Newtonsoft.Json.Serialization;
 using System.Text.Json.Serialization;
 using _7Colors.Services;
+using _7Colors.Data.IRepository;
+using _7Colors.Data.Repository;
+using Stripe;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,6 +29,7 @@ builder.Services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.TryAddSingleton<IEmailSender, EmailSender>();
 builder.Services.AddTransient<IFileManager, FileManager>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+//builder.Services.AddTransient<IClaimsTransformation, RegisteredClaim>();
 builder.Services.AddControllersWithViews(
     options => options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true)
     .AddNewtonsoftJson(options =>
@@ -47,7 +51,8 @@ builder.Services
     {
         options.ClientId = builder.Configuration["Authentication:Google:ClientId"]!;
         options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"]!;
-        options.Scope.Add("https://www.googleapis.com/auth/user.birthday.read");
+        //options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+        //options.SaveTokens = true;
         options.Events.OnTicketReceived = ctx =>
         {           
             var user = ctx.Principal!.Identities.FirstOrDefault();
@@ -66,6 +71,10 @@ builder.Services
             return Task.CompletedTask;
         };
     });
+builder.Services.Configure<DataProtectionTokenProviderOptions>(options =>
+{
+    options.TokenLifespan = TimeSpan.FromDays(2); // Sets the expiry to two days
+});
 builder.Services.AddDbContext<AppDbContext>(op =>
 {
     op.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));

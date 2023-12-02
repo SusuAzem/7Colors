@@ -11,8 +11,9 @@ namespace _7Colors.Models
         [Required(ErrorMessage = "حقل النوع مطلوب")]
         [Display(Name = "نوع المنتج")]
         public string? Type { get; set; }
+
         [JsonIgnore] 
-        public virtual IEnumerable<Product> Products { get; set; } = new List<Product>();
+        public virtual IEnumerable<Product>? Products { get; set; }
 
     }
 }
