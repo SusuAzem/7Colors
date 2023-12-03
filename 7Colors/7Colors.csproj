@@ -7,6 +7,7 @@
     <RootNamespace>_7Colors</RootNamespace>
     <RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
     <ApplicationIcon>Logo.ico</ApplicationIcon>
+    <UserSecretsId>01e4d340-0a9f-44ab-a079-391313f58cf1</UserSecretsId>
   </PropertyGroup>
 
 

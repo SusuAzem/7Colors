@@ -1,6 +1,7 @@
 ﻿using _7Colors.Data;
 using _7Colors.Models;
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
@@ -10,6 +11,7 @@ using System.Reflection.Metadata;
 namespace _7Colors.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Policy = "Admin")]
     public class PostsController : Controller
     {
         private readonly AppDbContext context;

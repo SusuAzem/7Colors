@@ -16,7 +16,7 @@ namespace _7Colors.Controllers.Components
             _unitOfWork = unitOfWork;
         }
 
-        public async  Task <IViewComponentResult> InvokeAsync()
+        public IViewComponentResult Invoke()
         {
             var claimsIdentity = (ClaimsIdentity)User.Identity!;
             var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);

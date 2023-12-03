@@ -4,6 +4,7 @@ using _7Colors.Data.Repository;
 using _7Colors.Models;
 using _7Colors.ViewModels;
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -12,6 +13,7 @@ using Microsoft.Extensions.Hosting;
 namespace _7Colors.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Policy = "Admin")]
     public class ProductsController : Controller
     {
         private readonly IUnitOfWork unitOfWork;

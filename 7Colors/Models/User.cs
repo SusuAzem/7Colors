@@ -27,7 +27,7 @@ namespace _7Colors.Models
             City = "-";
             Neighborhood = "-";
             PostalCode = 10000;
-            Role = "Student";
+            Role = "User";
             Registered = false;
             Orders = new List<OrderHeader>();
             LockoutEnd =  new DateTimeOffset();

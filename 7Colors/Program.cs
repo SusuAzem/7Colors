@@ -56,7 +56,7 @@ builder.Services
         options.Events.OnTicketReceived = ctx =>
         {           
             var user = ctx.Principal!.Identities.FirstOrDefault();
-            if (user!.Claims.FirstOrDefault(m => m.Type == ClaimTypes.Email)!.Value == "soso.g.f.86@gmail.com")
+            if (user!.Claims.FirstOrDefault(m => m.Type == ClaimTypes.Email)!.Value == StringDefault.AdminEmail)
             {
                 user.AddClaim(new Claim(ClaimTypes.Role, "Admin"));
             }
@@ -86,7 +86,7 @@ builder.Services.AddAuthorization(options =>
         policy.RequireAssertion(context =>
         {
             var email = context.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Email)?.Value;
-            if (email == "soso.g.f.86@gmail.com")
+            if (email == StringDefault.AdminEmail)
             {
                 return true;
             }

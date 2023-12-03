@@ -14,6 +14,7 @@ using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 namespace _7Colors.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Policy = "Admin")]
     public class UsersController : Controller
     {
         private readonly AppDbContext context;

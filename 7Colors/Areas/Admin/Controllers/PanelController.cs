@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace _7Colors.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    //[Authorize(Roles = SD.Role_Admin)]
+    [Authorize(Policy = "Admin")]
     public class PanelController : Controller
     {
                 

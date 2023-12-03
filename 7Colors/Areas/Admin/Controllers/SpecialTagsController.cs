@@ -1,11 +1,13 @@
 ﻿using _7Colors.Data;
 using _7Colors.Models;
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace _7Colors.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Policy = "Admin")]
     public class SpecialTagsController : Controller
     {
         private readonly AppDbContext context;
