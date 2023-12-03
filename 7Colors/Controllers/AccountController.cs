@@ -17,12 +17,15 @@ namespace _7Colors.Controllers
         private readonly ILogger<HomeController> _logger;
         private readonly IUnitOfWork unitOfWork;
         private readonly IEmailSender sender;
+        IMailService mailService;
 
-        public AccountController(ILogger<HomeController> logger, IUnitOfWork unitOfWork, IEmailSender sender)
+        public AccountController(ILogger<HomeController> logger, IUnitOfWork unitOfWork, 
+            IEmailSender sender, IMailService mailService)
         {
             _logger = logger;
             this.unitOfWork = unitOfWork;
             this.sender = sender;
+            this.mailService = mailService;
         }
 
         [HttpGet]
@@ -98,8 +101,22 @@ namespace _7Colors.Controllers
                     User.Identities.FirstOrDefault()!.AddClaim(new Claim(type: "Role", exuser.Role!));
                     unitOfWork.User.Update(exuser);
                     unitOfWork.Save();
-                    await sender.SendEmailAsync(user.Email!, "الألوان السبعة - تسجيل المستخدم", "لقد تم إكمال تسجيل المعلومات بنجاح");
-                    await sender.SendEmailAsync(user.ParentEmail!, "الألوان السبعة - تسجيل معلومات طفلك", "لقد تم إكمال تسجيل معلومات طفلك بنجاح");
+                    //await sender.SendEmailAsync(user.Email!, "الألوان السبعة - تسجيل المستخدم", "لقد تم إكمال تسجيل المعلومات بنجاح");
+                    //await sender.SendEmailAsync(user.ParentEmail!, "الألوان السبعة - تسجيل معلومات طفلك", "لقد تم إكمال تسجيل معلومات طفلك بنجاح");
+                    await mailService.SendMailAsync(new MailData
+                    {
+                        ToId = user.Email!,
+                        ToName = user.Name!,
+                        Subject= "مرحباً بك",
+                        Body = "\\templates\\Hello.html",
+                    });
+                    await mailService.SendMailAsync(new MailData
+                    {
+                        ToId = user.Email!,
+                        ToName = user.Name!,
+                        Subject = "مرحباً بك",
+                        Body = "\\templates\\RegComG.html",
+                    });
                     TempData["Register"] = "لقد تم إكمال تسجيل المعلومات بنجاح";
                 }
             }

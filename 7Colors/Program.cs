@@ -27,6 +27,8 @@ builder.Services.AddSession(op =>
 });
 builder.Services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.TryAddSingleton<IEmailSender, EmailSender>();
+builder.Services.Configure<MailSettings>(builder.Configuration.GetSection("SmtpSettings"));
+builder.Services.AddTransient<IMailService, MailService>();
 builder.Services.AddTransient<IFileManager, FileManager>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 //builder.Services.AddTransient<IClaimsTransformation, RegisteredClaim>();
