@@ -3,8 +3,17 @@
 @using System.Globalization;
 @using System.Net.Http
 @using Microsoft.AspNetCore.Http
-@inject IHttpContextAccessor HttpContextAccessor
-
+@{
+    bool click;
+    if (User!.Identity!.IsAuthenticated)
+    {
+        click = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)!.Value == StringDefault.AdminEmail ? true : false;
+    }
+    else
+    {
+        click = false;
+    }
+}
 <!DOCTYPE html>
 <html dir="rtl" lang="ar">
 <head>
@@ -46,7 +55,14 @@
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container-fluid">
-                <a class="navbar-brand" asp-area="Admin" asp-controller="Panel" asp-action="FrontPage"></a>
+                @if (click)
+                {
+                    <a class="navbar-brand" asp-area="Admin" asp-controller="Panel" asp-action="FrontPage"></a>
+                }
+                else
+                {
+                    <a class="navbar-brand" href="#" aria-disabled="@click" role="link"></a>
+                }                                       
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon">
                     </span>
@@ -76,8 +92,8 @@
             </div>
         </nav>
     </header>
-    <div class="container">
 
+    <div class="container">
         <main role="main" class="pb-3">
             @RenderBody()
         </main>

@@ -26,16 +26,16 @@
                             <th>
                                 @Html.DisplayNameFor(c => c.Type)
                             </th>
-                            <th></th>
+                           
                             <th>خيارات</th>
                         </tr>
                         @foreach (var item in Model)
                         {
                             <tr>
                                 <td>@item.Type</td>
-                                <td>
-                                    <partial name="_Buttons" model="@item.Id" />
-                                </td>
+
+                                <partial name="_Buttons" model="@item.Id" />
+
                             </tr>
 
                         }

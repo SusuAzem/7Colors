@@ -22,7 +22,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddSession(op =>
 {
-    op.IdleTimeout= TimeSpan.FromMinutes(30);
+    op.IdleTimeout = TimeSpan.FromMinutes(30);
     op.Cookie.IsEssential = true;
 });
 builder.Services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
@@ -56,11 +56,12 @@ builder.Services
         //options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
         //options.SaveTokens = true;
         options.Events.OnTicketReceived = ctx =>
-        {           
+        {
             var user = ctx.Principal!.Identities.FirstOrDefault();
             if (user!.Claims.FirstOrDefault(m => m.Type == ClaimTypes.Email)!.Value == StringDefault.AdminEmail)
             {
                 user.AddClaim(new Claim(ClaimTypes.Role, "Admin"));
+                user.AddClaim(new Claim(type: "Registered", "true"));
             }
             List<AuthenticationToken> tokens = ctx.Properties!.GetTokens().ToList();
 
@@ -83,36 +84,13 @@ builder.Services.AddDbContext<AppDbContext>(op =>
 });
 builder.Services.AddAuthorization(options =>
 {
-    options.AddPolicy("Admin", policy =>
-    {
-        policy.RequireAssertion(context =>
-        {
-            var email = context.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Email)?.Value;
-            if (email == StringDefault.AdminEmail)
-            {
-                return true;
-            }
-            return false;
-        });
-    });
+    options.AddPolicy("Admin", policy => 
+    policy.RequireClaim(ClaimTypes.Email, StringDefault.AdminEmail));
+    
     options.AddPolicy("Teacher", policy =>
-    {
-        policy.RequireAssertion(context =>
-        {
-            var role = context.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Role)?.Value;
-            if (role == "Teacher")
-            {
-                return true;
-            }
-            return false;
-        });
-    });
+    policy.RequireClaim(ClaimTypes.Role, "Teacher"));
 });
-//builder.Services.AddCors();
-//builder.Services.AddCors(options =>
-//{
-//    options.AddPolicy("AllowAll", p => p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader().AllowCredentials());
-//});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

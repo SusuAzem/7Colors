@@ -52,9 +52,9 @@ namespace _7Colors.Areas.Admin.Controllers
             }
             if (Image != null)
             {
-                var name = Path.Combine(webHost.WebRootPath + "/images", Path.GetFileName(Image.FileName));
+                var name = Path.Combine(webHost.WebRootPath + "/images/products/", Path.GetFileName(Image.FileName));
                 Image.CopyTo(new FileStream(name, FileMode.Create));
-                pro.Image = "/images/" + Image.FileName;
+                pro.Image = "/images/products/" + Image.FileName;
             }
             if (Image == null)
             {
@@ -97,9 +97,9 @@ namespace _7Colors.Areas.Admin.Controllers
         {          
             if (Image != null)
             {
-                var name = Path.Combine(webHost.WebRootPath + "/images", Path.GetFileName(Image.FileName));
+                var name = Path.Combine(webHost.WebRootPath + "/images/products/", Path.GetFileName(Image.FileName));
                 await Image.CopyToAsync(new FileStream(name, FileMode.Create));
-                pro.Image = "/images/" + Image.FileName;              
+                pro.Image = "/images/products/" + Image.FileName;              
             }
             if (Image == null)
             {

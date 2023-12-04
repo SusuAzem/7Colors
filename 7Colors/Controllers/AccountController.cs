@@ -19,7 +19,7 @@ namespace _7Colors.Controllers
         private readonly IEmailSender sender;
         IMailService mailService;
 
-        public AccountController(ILogger<HomeController> logger, IUnitOfWork unitOfWork, 
+        public AccountController(ILogger<HomeController> logger, IUnitOfWork unitOfWork,
             IEmailSender sender, IMailService mailService)
         {
             _logger = logger;
@@ -94,21 +94,17 @@ namespace _7Colors.Controllers
                     exuser.ParentEmail = user.ParentEmail!;
                     exuser.ParentPhone = user.ParentPhone!;
                     exuser.Phone = user.Phone!;
-                    if (!User.HasClaim(claim => claim.Type == "Registered"))
-                    {
-                        User.Identities.FirstOrDefault()!.AddClaim(new Claim(type: "Registered", "true"));
-                    }
+
+                    User.Identities.FirstOrDefault()!.AddClaim(new Claim(type: "Registered", "true"));
                     User.Identities.FirstOrDefault()!.AddClaim(new Claim(type: "Role", exuser.Role!));
                     unitOfWork.User.Update(exuser);
                     unitOfWork.Save();
-                    //await sender.SendEmailAsync(user.Email!, "الألوان السبعة - تسجيل المستخدم", "لقد تم إكمال تسجيل المعلومات بنجاح");
-                    //await sender.SendEmailAsync(user.ParentEmail!, "الألوان السبعة - تسجيل معلومات طفلك", "لقد تم إكمال تسجيل معلومات طفلك بنجاح");
                     await mailService.SendMailAsync(new MailData
                     {
                         ToId = user.Email!,
                         ToName = user.Name!,
-                        Subject= "مرحباً بك",
-                        Body = "\\templates\\Hello.html",
+                        Subject = "مرحباً بك",
+                        Body = "\\templates\\RegCom.html",
                     });
                     await mailService.SendMailAsync(new MailData
                     {
@@ -121,8 +117,9 @@ namespace _7Colors.Controllers
                 }
             }
             User.Identities.FirstOrDefault()!.AddClaim(new Claim(type: "Role", exuser!.Role!));
+            User.Identities.FirstOrDefault()!.AddClaim(new Claim(type: "Registered", "false"));
             TempData["NotRegister"] = "لم يتم إكمال تسجيل المعلومات";
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Index), "Home");
         }
 
         public async Task Login()
@@ -152,6 +149,7 @@ namespace _7Colors.Controllers
                 }
                 if (exuser != null & !exuser!.Registered)
                 {
+                    User.Identities.FirstOrDefault()!.AddClaim(new Claim(type: "Role", value: exuser.Role!));
                     return RedirectToAction(nameof(Account), new { nameId });
                 }
                 if (exuser != null & exuser!.Registered)
@@ -172,7 +170,13 @@ namespace _7Colors.Controllers
                     surname: User.FindFirstValue(ClaimTypes.Surname)!,
                     email: User.FindFirstValue(ClaimTypes.Email)!);
             unitOfWork.User.Add(user);
-            await sender.SendEmailAsync(user.Email!, "الألوان السبعة - تسجيل دخول المستخدم", "لقد تم تسجيل دخولك معنا . قم بإكمال إدخال معلوماتك في أقرب وقت");
+            await mailService.SendMailAsync(new MailData
+            {
+                ToId = user.Email!,
+                ToName = user.Name!,
+                Subject = "مرحباً بك",
+                Body = "\\templates\\Hello.html",
+            });
             unitOfWork.Save();
             TempData["Login"] = "الرجاء إكمال معلومات التسجيل";
             return user;
@@ -193,12 +197,24 @@ namespace _7Colors.Controllers
                     Registered = true,
                     Role = "Admin"
                 };
+
+                unitOfWork.User.Add(admin);
+                User.Identities.FirstOrDefault()!.AddClaim(new Claim(type: "Registered", "true"));
+                User.Identities.FirstOrDefault()!.AddClaim(new Claim(type: "Role", admin.Role));
+                await mailService.SendMailAsync(new MailData
+                {
+                    ToId = admin.Email!,
+                    ToName = admin.Name!,
+                    Subject = "مرحباً بالأدمن",
+                    Body = "\\templates\\HelloAdmin.html",
+                });
+                unitOfWork.Save();
+                TempData["ARegister"] = "لقد تم إكمال تسجيل معلومات المسؤول بنجاح";
+                return RedirectToAction(nameof(Index), "Home");
             }
-            unitOfWork.User.Add(admin);
-            await sender.SendEmailAsync(admin.Email!, "الألوان السبعة - تسجيل دخول المسؤول", " مرحلاً بالأدمن .. لقد تم تسجيل دخولك معنا . قم بإكمال إدخال معلوماتك في أقرب وقت");
-            unitOfWork.Save();
-            TempData["ARegister"] = "لقد تم إكمال تسجيل معلومات المسؤول بنجاح";
-            return RedirectToAction(nameof(Index));
+            User.Identities.FirstOrDefault()!.AddClaim(new Claim(type: "Registered", "true"));
+            User.Identities.FirstOrDefault()!.AddClaim(new Claim(type: "Role", admin.Role));
+            return RedirectToAction(nameof(Index), "Home");
         }
 
         [Authorize]
