@@ -1,37 +1,59 @@
 using _7Colors.Data;
-using _7Colors.Models;
 using Newtonsoft.Json;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Options;
-
 using System.Security.Claims;
 using Newtonsoft.Json.Serialization;
 using System.Text.Json.Serialization;
 using _7Colors.Services;
 using _7Colors.Data.IRepository;
 using _7Colors.Data.Repository;
-using Stripe;
+using Microsoft.AspNetCore.DataProtection;
+using System.Security.Cryptography.X509Certificates;
+
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Configuration
+    .SetBasePath(Directory.GetCurrentDirectory())
+    .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+   .AddJsonFile("appsettings.Development.json", optional: true, reloadOnChange: true)
+   .AddJsonFile("appsettings.Production.json", optional: true, reloadOnChange: true)
+   .AddEnvironmentVariables();
+
+builder.Services.AddDbContext<AppDbContext>(op =>
+    op.UseSqlServer(builder.Configuration.GetConnectionString("ServerConnection")));
+
+//builder.Services.Configure<IISServerOptions>(options =>
+//{
+//    options.AutomaticAuthentication = false;
+//});
+
+//var httpsConnectionAdapterOptions = new HttpsConnectionAdapterOptions
+//{
+//    SslProtocols = System.Security.Authentication.SslProtocols.Tls12,
+//    ClientCertificateMode = ClientCertificateMode.AllowCertificate,
+//    ServerCertificate = new X509Certificate2("./Lets_Encrypt_7sevencolors.com.pfx", "Ss12345*")
+//};
+
 
 builder.Services.AddSession(op =>
 {
     op.IdleTimeout = TimeSpan.FromMinutes(30);
     op.Cookie.IsEssential = true;
 });
+
+builder.Services.AddLogging(builder => builder.AddDebug());
 builder.Services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.TryAddSingleton<IEmailSender, EmailSender>();
 builder.Services.Configure<MailSettings>(builder.Configuration.GetSection("SmtpSettings"));
 builder.Services.AddTransient<IMailService, MailService>();
 builder.Services.AddTransient<IFileManager, FileManager>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-//builder.Services.AddTransient<IClaimsTransformation, RegisteredClaim>();
+
 builder.Services.AddControllersWithViews(
     options => options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true)
     .AddNewtonsoftJson(options =>
@@ -53,8 +75,6 @@ builder.Services
     {
         options.ClientId = builder.Configuration["Authentication:Google:ClientId"]!;
         options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"]!;
-        //options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-        //options.SaveTokens = true;
         options.Events.OnTicketReceived = ctx =>
         {
             var user = ctx.Principal!.Identities.FirstOrDefault();
@@ -74,37 +94,44 @@ builder.Services
             return Task.CompletedTask;
         };
     });
+
 builder.Services.Configure<DataProtectionTokenProviderOptions>(options =>
 {
     options.TokenLifespan = TimeSpan.FromDays(2); // Sets the expiry to two days
 });
-builder.Services.AddDbContext<AppDbContext>(op =>
-{
-    op.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
-});
+
+builder.Services.AddDataProtection()
+    .SetDefaultKeyLifetime(TimeSpan.FromDays(7))
+    .ProtectKeysWithCertificate(
+        new X509Certificate2("./Lets_Encrypt_7sevencolors.com.pfx", "Ss12345*",
+           X509KeyStorageFlags.EphemeralKeySet))
+    .PersistKeysToDbContext<AppDbContext>();
+
 builder.Services.AddAuthorization(options =>
 {
-    options.AddPolicy("Admin", policy => 
+    options.AddPolicy("Admin", policy =>
     policy.RequireClaim(ClaimTypes.Email, StringDefault.AdminEmail));
-    
+
     options.AddPolicy("Teacher", policy =>
     policy.RequireClaim(ClaimTypes.Role, "Teacher"));
 });
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    app.UseDeveloperExceptionPage();
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
+}
+else
+{
+    app.UseDeveloperExceptionPage();
 }
 
 app.UseHttpsRedirection();
+app.UseDefaultFiles();
 app.UseStaticFiles();
-
+app.UseForwardedHeaders();
 app.UseRouting();
 app.UseSession();
 app.UseAuthentication();
@@ -120,7 +147,6 @@ app.MapAreaControllerRoute(
     areaName: "Course",
     pattern: "Course/{controller=Home}/{action=Index}/{id?}");
 
-
 app.MapAreaControllerRoute(
     name: "Admin",
     areaName: "Admin",
@@ -129,6 +155,5 @@ app.MapAreaControllerRoute(
 app.MapControllerRoute(
         name: "default",
         pattern: "{controller=Home}/{action=Index}/{id?}");
-
 
 app.Run();

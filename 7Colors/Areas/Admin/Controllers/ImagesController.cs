@@ -1,4 +1,6 @@
 ﻿using _7Colors.Data;
+using _7Colors.Data.IRepository;
+using _7Colors.Data.Repository;
 using _7Colors.Models;
 
 using Microsoft.AspNetCore.Authorization;
@@ -12,12 +14,12 @@ namespace _7Colors.Areas.Admin.Controllers
     [Authorize(Policy ="Admin")]
     public class ImagesController : Controller
     {
-        private readonly AppDbContext context;
+        private readonly IUnitOfWork unitOfWork;
         private readonly IWebHostEnvironment webHost;
 
-        public ImagesController(AppDbContext context, IWebHostEnvironment webHost)
+        public ImagesController(IUnitOfWork unitOfWork, IWebHostEnvironment webHost)
         {
-            this.context = context;
+            this.unitOfWork = unitOfWork;
             this.webHost = webHost;
         }
 
@@ -25,12 +27,11 @@ namespace _7Colors.Areas.Admin.Controllers
         {
             if (id == null)
             {
-                return View(context.Images.Include(p => p.Post).ToList());
+                return View(unitOfWork.Image.GetAll(null ,"Post"));
             }
             else
             {
-                return View(context.Images.Where(i=>i.PostId == id)
-                    .Include(p => p.Post).ToList());
+                return View(unitOfWork.Image.GetAll(i=>i.PostId == id, "Post"));
             }
         }
 
@@ -38,7 +39,7 @@ namespace _7Colors.Areas.Admin.Controllers
         [HttpGet]
         public IActionResult Create()
         {
-            ViewData["PostId"] = new SelectList(context.Posts.ToList(), "Id", "Title");
+            ViewData["PostId"] = new SelectList(unitOfWork.Post.GetAll(), "Id", "Title");
             return View();
         }
 
@@ -47,18 +48,18 @@ namespace _7Colors.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Image img, [FromForm] IFormFile Url)
         {
-            var existedImg = context.Images.FirstOrDefault(i => i.Title == img.Title & i.PostId == img.PostId);
+            var existedImg = unitOfWork.Image.GetFirstOrDefault(i => i.Title == img.Title & i.PostId == img.PostId);
             if (existedImg != null)
             {
                 ViewBag.message = "هذه الصورة موجودة مسبقاً";
-                ViewData["PostId"] = new SelectList(context.Posts.ToList(), "Id", "Title");
+                ViewData["PostId"] = new SelectList(unitOfWork.Post.GetAll(), "Id", "Title");
                 return View(img);
             }
             if (Url != null)
             {
-                var name = Path.Combine(webHost.WebRootPath + "/images", Path.GetFileName(Url.FileName));
-                Url.CopyTo(new FileStream(name, FileMode.Create));
-                img.Url = "/images/" + Url.FileName;
+                var name = Path.Combine(webHost.WebRootPath + "/images/posts/", Path.GetFileName(Url.FileName));
+                await Url.CopyToAsync(new FileStream(name, FileMode.Create));
+                img.Url = "/images/posts/" + Url.FileName;
             }
             if (Url == null)
             {
@@ -66,12 +67,12 @@ namespace _7Colors.Areas.Admin.Controllers
             }
             if (ModelState.IsValid)
             {
-                context.Images.Add(img);
-                await context.SaveChangesAsync();
+                unitOfWork.Image.Add(img);
+                unitOfWork.Save();
                 TempData["Create"] = "لقد تم إضافة الصورة";
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["PostId"] = new SelectList(context.Posts.ToList(), "Id", "Title");
+            ViewData["PostId"] = new SelectList(unitOfWork.Post.GetAll(), "Id", "Title");
             return View(img);
         }
 
@@ -79,12 +80,12 @@ namespace _7Colors.Areas.Admin.Controllers
         [HttpGet]
         public IActionResult Edit(int? id)
         {
-            ViewData["PostId"] = new SelectList(context.Posts.ToList(), "Id", "Title");
+            ViewData["PostId"] = new SelectList(unitOfWork.Post.GetAll(), "Id", "Title");
             if (id == null)
             {
                 return NotFound();
             }
-            var img = context.Images.Include(c => c.Post).FirstOrDefault(c => c.Id == id);
+            var img = unitOfWork.Image.GetFirstOrDefault(c => c.Id == id, "Post");
             if (img == null)
             {
                 return NotFound();
@@ -99,14 +100,14 @@ namespace _7Colors.Areas.Admin.Controllers
         {
             if (Url != null)
             {
-                var name = Path.Combine(webHost.WebRootPath + "/images", Path.GetFileName(Url.FileName));
+                var name = Path.Combine(webHost.WebRootPath + "/images/posts/", Path.GetFileName(Url.FileName));
                 await Url.CopyToAsync(new FileStream(name, FileMode.Create));
-                img.Url = "/images/" + Url.FileName;
+                img.Url = "/images/posts/" + Url.FileName;
             }
             if (ModelState.IsValid)
             {
-                context.Images.Update(img);
-                await context.SaveChangesAsync();
+                unitOfWork.Image.Update(img);
+                unitOfWork.Save();
                 TempData["Edit"] = "لقد تم تعديل الصورة";
                 return RedirectToAction(nameof(Index));
             }
@@ -120,7 +121,7 @@ namespace _7Colors.Areas.Admin.Controllers
             {
                 return NotFound();
             }
-            var img = context.Images.Include(c => c.Post).FirstOrDefault(c => c.Id == id);
+            var img = unitOfWork.Image.GetFirstOrDefault(c => c.Id == id, "Post");
             if (img == null)
             {
                 return NotFound();
@@ -135,7 +136,7 @@ namespace _7Colors.Areas.Admin.Controllers
             {
                 return NotFound();
             }
-            var img = context.Images.Include(c => c.Post).FirstOrDefault(c => c.Id == id);
+            var img = unitOfWork.Image.GetFirstOrDefault(c => c.Id == id, "Post");
             if (img == null)
             {
                 return NotFound();
@@ -145,7 +146,7 @@ namespace _7Colors.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Delete(int? id, Image img)
+        public IActionResult Delete(int? id, Image img)
         {
             if (id == null)
             {
@@ -155,15 +156,15 @@ namespace _7Colors.Areas.Admin.Controllers
             {
                 return NotFound();
             }
-            var p = context.Images.FirstOrDefault(c => c.Id == id);
+            var p = unitOfWork.Image.GetFirstOrDefault(c => c.Id == id);
             if (p == null)
             {
                 return NotFound();
             }
             if (ModelState.IsValid)
             {
-                context.Images.Remove(p);
-                await context.SaveChangesAsync();
+                unitOfWork.Image.Remove(p);
+                unitOfWork.Save();
                 TempData["Delete"] = "لقد تم حذف الصورة";
                 return RedirectToAction(nameof(Index));
             }

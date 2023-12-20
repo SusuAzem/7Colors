@@ -1,0 +1,17 @@
+[Unit]
+Description=7Colors
+ 
+[Service]
+WorkingDirectory=/var/www/7Colors
+ExecStart=/usr/share/dotnet/dotnet /var/www/7Colors/7Colors.dll
+Restart=always
+# Restart service after 10 seconds if the dotnet service crashes:
+RestartSec=1000
+KillSignal=SIGINT
+SyslogIdentifier=dotnet-7Colors
+User=www-data
+Environment=ASPNETCORE_ENVIRONMENT=Production
+Environment=DOTNET_PRINT_TELEMETRY_MESSAGE=false
+
+[Install]
+WantedBy=multi-user.target

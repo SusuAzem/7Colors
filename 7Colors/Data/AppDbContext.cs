@@ -1,14 +1,21 @@
 ﻿using _7Colors.Models;
 
+using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Design;
 
 using System.Reflection.Metadata;
 
 namespace _7Colors.Data
 {
-    public class AppDbContext : DbContext
+    public class AppDbContext : DbContext, IDataProtectionKeyContext
     {
-        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
+        public AppDbContext()
+        {
+        }
+        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) 
+        {
+        }        
 
         public DbSet<Image> Images { get; set; }
         public DbSet<Post>  Posts { get; set; }
@@ -19,12 +26,7 @@ namespace _7Colors.Data
         public DbSet<Message> Messages { get; set; }
         public DbSet<OrderHeader> OrderHeaders { get; set; }
         public DbSet<OrderItem> OrderItems { get; set; }
-
-
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            //optionsBuilder.EnableSensitiveDataLogging();           
-        }
+        public DbSet<DataProtectionKey> DataProtectionKeys { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -75,10 +77,18 @@ namespace _7Colors.Data
                 s.Property(s => s.UserNameIdentifier).IsRequired();
                 s.HasOne(s => s.User).WithMany().HasForeignKey(o => o.UserNameIdentifier);
 
-            });
-           
-
+            });           
             base.OnModelCreating(modelBuilder);
+        }
+    }
+    public class AppDbContextFactory : IDesignTimeDbContextFactory<AppDbContext>
+    {
+        public AppDbContext CreateDbContext(string[] args)
+        {
+            var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
+            optionsBuilder.UseSqlServer("Data Source=sql2022-001.adaptivewebhosting.com,1433;Initial Catalog=sevencol_db");
+
+            return new AppDbContext(optionsBuilder.Options);
         }
     }
 }

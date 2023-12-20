@@ -11,6 +11,9 @@ namespace _7Colors.Data.IRepository
         IOrderHeaderRepository OrderHeader { get; }
         IOrderItemRepository OrderItem { get; }
         IUserRepository User { get; }
+        IImageRepository Image { get; }
+        IPostRepository Post { get; }
+
         void Save();
     }
 }

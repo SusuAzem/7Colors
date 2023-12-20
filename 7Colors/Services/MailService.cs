@@ -60,11 +60,12 @@ namespace _7Colors.Services
 
                     using (SmtpClient mailClient = new SmtpClient())
                     {
-                        await mailClient.ConnectAsync(_mailSettings.Host, _mailSettings.Port, MailKit.Security.SecureSocketOptions.StartTls);
+                        await mailClient.ConnectAsync(_mailSettings.Host, _mailSettings.Port, true);
+                        //await mailClient.ConnectAsync(_mailSettings.Host, _mailSettings.Port, MailKit.Security.SecureSocketOptions.StartTls);
                         await mailClient.AuthenticateAsync(_mailSettings.UserName, _mailSettings.Password);
                         await mailClient.SendAsync(emailMessage);
                         await mailClient.DisconnectAsync(true);
-                    }
+                    }                                                             
                 }
 
                 return true;

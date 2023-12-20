@@ -17,5 +17,7 @@
         public const string SessionCart = "SessionShoppingCart";
 
         public const string AdminEmail = "soso.g.f.86@gmail.com";
+        //public const string AdminEmail = "al.alwan.alsab3h@gmail.com";
+
     }
 }

@@ -19,6 +19,8 @@ namespace _7Colors.Data.Repository
             OrderItem = new OrderItemRepository(_db);
             OrderHeader = new OrderHeaderRepository(_db);
             User = new UserRepository(_db);
+            Post = new PostRepository(_db);
+            Image = new ImageRepository(_db);
         }
     
         public IProductTypeRepository ProductType { get; private set; }
@@ -28,6 +30,8 @@ namespace _7Colors.Data.Repository
         public IOrderHeaderRepository OrderHeader { get; private set; }
         public IOrderItemRepository OrderItem { get; private set; }
         public IUserRepository User { get; private set; }
+        public IImageRepository Image { get; }
+        public IPostRepository Post { get; }
 
         public async void Save()
         {

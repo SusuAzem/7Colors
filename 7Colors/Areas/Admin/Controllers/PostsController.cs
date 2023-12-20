@@ -1,4 +1,5 @@
 ﻿using _7Colors.Data;
+using _7Colors.Data.IRepository;
 using _7Colors.Models;
 
 using Microsoft.AspNetCore.Authorization;
@@ -14,15 +15,15 @@ namespace _7Colors.Areas.Admin.Controllers
     [Authorize(Policy = "Admin")]
     public class PostsController : Controller
     {
-        private readonly AppDbContext context;
+        private readonly IUnitOfWork  unitOfWork;
 
-        public PostsController(AppDbContext context)
+        public PostsController(IUnitOfWork context)
         {
-            this.context = context;
+            this.unitOfWork = context;
         }
         public IActionResult Index()
         {
-            return View(context.Posts.Include(g=>g.Images).ToList());
+            return View(unitOfWork.Post.GetAll(null ,"Image"));
         }
 
         [HttpGet]
@@ -33,12 +34,12 @@ namespace _7Colors.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Post post)
+        public IActionResult Create(Post post)
         {
             if (ModelState.IsValid)
             {
-                context.Posts.Add(post);
-                await context.SaveChangesAsync();
+                unitOfWork.Post.Add(post);
+                 unitOfWork.Save();
                 TempData["Create"] = "لقد تم إضافة موضوع للصفحة الرئيسية";
                 return RedirectToAction(nameof(Index));
             }
@@ -52,7 +53,7 @@ namespace _7Colors.Areas.Admin.Controllers
             {
                 return NotFound();
             }
-            var post = context.Posts.Include(p=>p.Images).FirstOrDefault(p=>p.Id == id);
+            var post = unitOfWork.Post.GetFirstOrDefault(p=>p.Id == id, "Image");
             if (post == null)
             {
                 return NotFound();
@@ -62,12 +63,12 @@ namespace _7Colors.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Post post)
+        public IActionResult Edit(Post post)
         {
             if (ModelState.IsValid)
             {
-                context.Posts.Update(post);
-                await context.SaveChangesAsync();
+                unitOfWork.Post.Update(post);
+                unitOfWork.Save();
                 TempData["Edit"] = "لقد تم تعديل موضوع للصفحة الرئيسية";
                 return RedirectToAction(nameof(Index));
             }
@@ -81,7 +82,7 @@ namespace _7Colors.Areas.Admin.Controllers
             {
                 return NotFound();
             }
-            var post = context.Posts.Include(p => p.Images).FirstOrDefault(p => p.Id == id); 
+            var post = unitOfWork.Post.GetFirstOrDefault(p => p.Id == id, "Image"); 
             if (post == null)
             {
                 return NotFound();
@@ -96,7 +97,7 @@ namespace _7Colors.Areas.Admin.Controllers
             {
                 return NotFound();
             }
-            var post = context.Posts.Find(id);
+            var post = unitOfWork.Post.GetFirstOrDefault(p=>p.Id==id);
             if (post == null)
             {
                 return NotFound();
@@ -106,7 +107,7 @@ namespace _7Colors.Areas.Admin.Controllers
      
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Delete(int? id, Post post)
+        public IActionResult Delete(int? id, Post post)
         {
             if (id == null)
             {
@@ -116,15 +117,15 @@ namespace _7Colors.Areas.Admin.Controllers
             {
                 return NotFound();
             }
-            var g = context.Posts.Find(id);
+            var g = unitOfWork.Post.GetFirstOrDefault(p => p.Id == id);
             if (g == null)
             {
                 return NotFound();
             }
             if (ModelState.IsValid)
             {
-                context.Posts.Remove(g);
-                await context.SaveChangesAsync();
+                unitOfWork.Post.Remove(g);
+                unitOfWork.Save();
                 TempData["Delete"] = "لقد تم حذف موضوع للصفحة الرئيسية";
                 return RedirectToAction(nameof(Index));
             }
@@ -134,7 +135,7 @@ namespace _7Colors.Areas.Admin.Controllers
 
         #endregion
         [HttpPost]
-        public async Task<IActionResult> EditPostImg(int[] ids)
+        public IActionResult EditPostImg(int[] ids)
         {
             //if (!ModelState.IsValid)
             //    return BadRequest(ModelState);
@@ -145,11 +146,11 @@ namespace _7Colors.Areas.Admin.Controllers
             Image img;
             foreach (var id in ids)
             {
-                img= context.Images.FirstOrDefault(i=>i.Id == id)!;
+                img= unitOfWork.Image.GetFirstOrDefault(i=>i.Id == id)!;
                 img.PostId = 0;
-                context.Images.Update(img);
+                unitOfWork.Image.Update(img);
             }
-            await context.SaveChangesAsync();
+            unitOfWork.Save();
             return Ok();
         }
     }

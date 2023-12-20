@@ -138,7 +138,7 @@ namespace _7Colors.Areas.ECommerce.Controllers
                 Session session = service.Create(options);
                 unitOfWork.OrderHeader.UpdateStripePaymentID(VM.OrderHeader.Id, session.Id, session.PaymentIntentId);
                 unitOfWork.Save();
-                Response.Headers.Add("Location", session.Url);
+                Response.Headers.Append("Location", session.Url);
             return new StatusCodeResult(303);
             //return RedirectToAction("OrderConfirmation", "Cart", new { id = VM.OrderHeader.Id }, new StatusCodeResult(303).ToString());
             }
