@@ -20,7 +20,7 @@ namespace _7Colors.ViewModels
 
 
         [Required(ErrorMessage = "حقل رقم التواصل مطلوب")]
-        [RegularExpression("/^(05)([0-9]{8})$/", ErrorMessage = "الرقم يبدأ ب 05")]
+        [RegularExpression(@"^(05)(5|0|3|6|4|9|1|8|7)([0-9]{7})$", ErrorMessage = "الرقم يبدأ ب 05")]
         [Display(Name = "رقم التواصل")]
         public string PhoneNumber { get; set; } = "";
 

@@ -1,5 +1,6 @@
 ﻿using _7Colors.Data;
 using _7Colors.Models;
+using _7Colors.Services;
 using _7Colors.ViewModels;
 
 using Microsoft.AspNetCore.Mvc;
@@ -9,10 +10,12 @@ namespace _7Colors.Controllers
     public class MessagesController : Controller
     {
         private readonly AppDbContext _context;
+        private readonly IMailService mailService;
 
-        public MessagesController(AppDbContext context)
+        public MessagesController(AppDbContext context, IMailService mailService)
         {
             _context = context;
+            this.mailService = mailService;
         }
 
         public IActionResult Index()
@@ -48,6 +51,13 @@ namespace _7Colors.Controllers
                     Name = message.Name,
                     TimeSend = DateTime.Now,
                 };
+                await mailService.ReceiveEmailAsync(new MailData
+                {
+                    ToId = message.Email,
+                    ToName = message.Name,
+                    Subject = "استمارة عميل",
+                    Body = message.Content + Environment.NewLine + message.PhoneNumber,
+                });
                 _context.Messages.Add(ms);
                 await _context.SaveChangesAsync();
                 return Json(new { IsSuccess = "redirect", description = Url.Action("Home", "Index", new { id = message.Id }), message });

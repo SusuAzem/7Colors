@@ -30,10 +30,10 @@ namespace _7Colors.Data.Repository
         public IOrderHeaderRepository OrderHeader { get; private set; }
         public IOrderItemRepository OrderItem { get; private set; }
         public IUserRepository User { get; private set; }
-        public IImageRepository Image { get; }
-        public IPostRepository Post { get; }
+        public IImageRepository Image { get; private set; }
+        public IPostRepository Post { get; private set; }
 
-        public async void Save()
+        public async Task Save()
         {
             await _db.SaveChangesAsync();
         }        

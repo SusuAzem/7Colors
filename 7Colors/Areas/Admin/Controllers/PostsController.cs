@@ -23,7 +23,7 @@ namespace _7Colors.Areas.Admin.Controllers
         }
         public IActionResult Index()
         {
-            return View(unitOfWork.Post.GetAll(null ,"Image"));
+            return View(unitOfWork.Post.GetAll(null , "Images"));
         }
 
         [HttpGet]
@@ -34,12 +34,12 @@ namespace _7Colors.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(Post post)
+        public async Task<IActionResult> CreateAsync(Post post)
         {
             if (ModelState.IsValid)
             {
                 unitOfWork.Post.Add(post);
-                 unitOfWork.Save();
+                await unitOfWork.Save();
                 TempData["Create"] = "لقد تم إضافة موضوع للصفحة الرئيسية";
                 return RedirectToAction(nameof(Index));
             }
@@ -63,12 +63,12 @@ namespace _7Colors.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(Post post)
+        public async Task<IActionResult> EditAsync(Post post)
         {
             if (ModelState.IsValid)
             {
                 unitOfWork.Post.Update(post);
-                unitOfWork.Save();
+                await unitOfWork.Save();
                 TempData["Edit"] = "لقد تم تعديل موضوع للصفحة الرئيسية";
                 return RedirectToAction(nameof(Index));
             }
@@ -107,7 +107,7 @@ namespace _7Colors.Areas.Admin.Controllers
      
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Delete(int? id, Post post)
+        public async Task<IActionResult> DeleteAsync(int? id, Post post)
         {
             if (id == null)
             {
@@ -125,7 +125,7 @@ namespace _7Colors.Areas.Admin.Controllers
             if (ModelState.IsValid)
             {
                 unitOfWork.Post.Remove(g);
-                unitOfWork.Save();
+                await unitOfWork.Save();
                 TempData["Delete"] = "لقد تم حذف موضوع للصفحة الرئيسية";
                 return RedirectToAction(nameof(Index));
             }
@@ -135,10 +135,8 @@ namespace _7Colors.Areas.Admin.Controllers
 
         #endregion
         [HttpPost]
-        public IActionResult EditPostImg(int[] ids)
-        {
-            //if (!ModelState.IsValid)
-            //    return BadRequest(ModelState);
+        public async Task<IActionResult> EditPostImgAsync(int[] ids)
+        {           
             if (ids == null)
             {
                 return BadRequest();
@@ -150,7 +148,7 @@ namespace _7Colors.Areas.Admin.Controllers
                 img.PostId = 0;
                 unitOfWork.Image.Update(img);
             }
-            unitOfWork.Save();
+            await unitOfWork.Save();
             return Ok();
         }
     }

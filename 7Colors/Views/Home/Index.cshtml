@@ -4,13 +4,12 @@
     ViewData["Title"] = "الصفحة الرئيسية";
 }
 
-
 @foreach (var item in Model)
 {
     <h3 class="stacked">@item.Title</h3>
     <br />
     <br />
-    <div id="carouseI_@item.Id" class="carousel slide" data-bs-ride="carousel" data-bs-interval="2000" dir="rtl" data-bs-pause="hover"
+    <div id="carouseI_@item.Id" class="carousel slide w-50" data-bs-ride="carousel" data-bs-interval="2000" dir="rtl" data-bs-pause="hover"
          data-id="@item.Id">
 
         <div class="carousel-indicators">

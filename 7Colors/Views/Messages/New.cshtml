@@ -5,100 +5,90 @@
 
 <section class="page-hero">
     <div>
-        <h3 class="page-hero-title">تواصل معنا</h3>
+        <h3 class="multicolortext">تواصل معنا</h3>
     </div>
 </section>
 <section>
     <div class="container">
         <div class="row">
-            <div class="col-lg-12 text-center mt-5">
-                <h2>
+            <div class="col-lg-12 text-center m-4">
+                <h4>
                     لديك بعض الاستفسارات؟
                     نود أن نسمع منك، نرجوا إملاء الاستمارة للتواصل معنا
-                </h2>
+                </h4>
                 <hr>
             </div>
         </div>
         <div class="row">
             <!-- Addresses -->
             <div class="col-md-4 mb-4 mb-md-0">
-                <div class="bg-white box-shadow text-center p-5 px-md-2 px-lg-5">
+                <div class="bg-white box-shadow text-center p-5 px-md-2 px-lg-5 con">
                     <i class="fa fa-map-marker fa-4x text-primary icon-lg mb-4"></i>
                     <h4 class="mb-4">العنوان</h4>
                     <ul class="list-unstyled">
                         <li>الرياض - حي ......</li>
+                        <li>
+                            <a class="embed-responsive-item"
+                               href="https://maps.app.goo.gl/UwuiQj2BJDguETyA6" target="_blank">
+                                رابط Google Map
+                            </a>
+                        </li>
                     </ul>
                 </div>
             </div>
             <!-- phone -->
-            <div class="col-md-4 mb-4 mb-md-0">
-                <div class="bg-white box-shadow text-center p-5 px-md-2 px-lg-5">
+            <div class="col-md-4 mb-4 mb-md-0 ">
+                <div class="bg-white box-shadow text-center p-5 px-md-2 px-lg-5 con">
                     <i class="fa fa-phone fa-4x text-primary icon-lg mb-4"></i>
                     <h4 class="mb-4">رقم التواصل</h4>
                     <ul class="list-unstyled">
-                        <li>(863) 969-8248</li>
+                        <li></li>
                     </ul>
                 </div>
             </div>
             <!-- Mail -->
-            <div class="col-md-4 mb-4 mb-md-0">
-                <div class="bg-white box-shadow text-center p-5 px-md-2 px-lg-5">
+            <div class="col-md-4 mb-4 mb-md-0 con">
+                <div class="bg-white box-shadow text-center p-5 px-md-2 px-lg-5 con">
                     <i class="fa fa-envelope fa-4x text-primary icon-lg mb-4"></i>
                     <h4 class="mb-4">للتواصل</h4>
                     <ul class="list-unstyled">
-                        <li>electronicsmf@aol.com</li>
+                        <li>
+                            Coo@7sevencolors.com
+                        </li>
+                        <li>
+                            Fatimah@7sevencolors.com
+                        </li>
                     </ul>
                 </div>
             </div>
         </div>
         <hr />
         <div class="row">
-            <div class="col-lg-6">
-                <div>
-                    <header>
-                        <div class="container h-100">
-                            <div id="map">
-                                <div class="container">
-                                    <div class="row">
-                                        <div class="col-lg-12">
-                                            <h3>الموقع</h3>
-                                            <hr>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="embed-responsive embed-responsive-21by9">
-                                            <a class="embed-responsive-item"
-                                                    href="https://maps.app.goo.gl/UwuiQj2BJDguETyA6" target="_blank">
-                                                رابط Google Map</a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <hr />
-                        </div>
-                    </header>
-                </div>
-            </div>
-            <div class="col-lg-6">
+            <div class="col-lg-6 msg">
                 <h3 class="text-uppercase">الاستمارة</h3>
                 <form asp-controller="Messages" asp-action="Create" method="post" id="messageForm" autocomplete="off">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                     <input asp-for="Id" type="hidden" />
                     <input asp-for="TimeSend" type="hidden" />
                     <div class="form-group">
                         <label>الاسم</label>
                         <input class="form-control" asp-for="Name" />
                     </div>
+                    <span asp-validation-for="Name" class="text-danger"></span>
                     <div class="form-group">
                         <label>رقم التواصل</label>
                         <input class="form-control" asp-for="PhoneNumber" />
+                        <span asp-validation-for="PhoneNumber" class="text-danger"></span>
                     </div>
                     <div class="form-group">
                         <label>البريد الالكتروني</label>
                         <input class="form-control" asp-for="Email" />
                     </div>
+                    <span asp-validation-for="Email" class="text-danger"></span>
                     <div class="form-group">
                         <label>المحتوى</label>
                         <textarea class="form-control" asp-for="Content">
+                        <span asp-validation-for="Content" class="text-danger"></span>
                          </textarea>
                     </div>
                     @Html.AntiForgeryToken()
@@ -109,6 +99,9 @@
     </div><!--container-->
 </section>
 @section scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
     <script>
         let submitForm = document.querySelector("#messageForm");
         let name, email, message;
@@ -123,22 +116,22 @@
             email = document.getElementById("Email").value;
             message = document.getElementById("Content").value;
 
-            if (name === "") {
-                alert("الرجاء كتابة الاسم ");
-                return false;
-            }
-            if (phone === "") {
-                alert("الرجاء كتابة رقم التواصل ");
-                return false;
-            }
-            if (email === "") {
-                alert("الرجاء كتابة البريد الالكتروني ");
-                return false;
-            }
-            if (message === "") {
-                alert("الرجاء كتابة المحتوى ");
-                return false;
-            }
+            // if (name === "") {
+            //     alert("الرجاء كتابة الاسم ");
+            //     return false;
+            // }
+            // if (phone === "") {
+            //     alert("الرجاء كتابة رقم التواصل ");
+            //     return false;
+            // }
+            // if (email === "") {
+            //     alert("الرجاء كتابة البريد الالكتروني ");
+            //     return false;
+            // }
+            // if (message === "") {
+            //     alert("الرجاء كتابة المحتوى ");
+            //     return false;
+            // }
             fetch("/Messages/Create", {
                 method: "POST",
                 headers: {

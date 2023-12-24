@@ -11,7 +11,20 @@ namespace _7Colors.ViewModels
 {
     public class ProductItemViewModel
     {
+        public ProductItemViewModel(Product p)
+        {
+            ProductType = p.ProductType;
+            ProductColor = p.ProductColor;
+            IsPublished = p.IsPublished;
+            Id = p.Id;
+            Name = p.Name;
+            Price = p.Price;
+            Image = p.Image;
+            IsAvailable = p.IsAvailable;
+            SpecialTag = p.SpecialTag;
+        }
         public int Id { get; set; }
+
         [Required(ErrorMessage ="حقل الاسم مطلوب")]
         [Display(Name = "الاسم")]
         public string? Name { get; set; }

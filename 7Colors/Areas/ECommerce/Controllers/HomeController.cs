@@ -1,20 +1,11 @@
-﻿using _7Colors.Data;
-using _7Colors.Models;
-
-using Microsoft.AspNetCore.Http;
+﻿using _7Colors.Models;
+using _7Colors.ViewModels;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using System.Text.Json.Serialization;
-using System.Text.Json;
-using Newtonsoft.Json;
 using _7Colors.Services;
 using _7Colors.Data.IRepository;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.Extensions.Hosting;
 using System.Security.Claims;
-using _7Colors.Data.Repository;
 using Microsoft.CodeAnalysis;
-using _7Colors.ViewModels;
 
 namespace _7Colors.Areas.ECommerce.Controllers
 {
@@ -35,12 +26,12 @@ namespace _7Colors.Areas.ECommerce.Controllers
         public IActionResult Index()
         {
             IEnumerable<Product> productList =
-            unitOfWork.Product.GetAll(includeProperties: "ProductType,SpecialTag");
-            ViewData["Types"] = unitOfWork.ProductType.GetAll();            
-            return View("Index",productList);
+                unitOfWork.Product.GetAll(includeProperties: "ProductType,SpecialTag");
+            ViewData["Types"] = unitOfWork.ProductType.GetAll();
+            return View("Index", productList);
         }
-        
-        
+
+
         [HttpGet]
         public JsonResult Data()
         {
@@ -54,12 +45,12 @@ namespace _7Colors.Areas.ECommerce.Controllers
         {
             var p = unitOfWork.Product.GetFirstOrDefault(u => u.Id == id,
                includeProperties: "ProductType,SpecialTag");
-            ShoppingCartLine cartObj = new()
+            ShoppingCartLineViewModel cartObj = new()
             {
                 Count = 1,
                 ProductId = id,
-                Product = p,
-                LinePrice = p.Price
+                LinePrice = p.Price,
+                Product = new(p)
             };
             return View(cartObj);
         }
@@ -68,29 +59,34 @@ namespace _7Colors.Areas.ECommerce.Controllers
         [ActionName("Detail")]
         [Authorize]
         [Route("ECommerce/Home/Detail")]
-        public ActionResult ProductDetail(ShoppingCartLine shoppingCart)
+        public async Task<ActionResult> ProductDetail(ShoppingCartLineViewModel shoppingCart)
         {
-           
-            //products = HttpContext.Session.Get<List<Product>>("products");
-            
-            var claim = User.Identities.FirstOrDefault()!.FindFirst(ClaimTypes.NameIdentifier);
-            shoppingCart.UserNameIdentifier = claim!.Value;
+            var claim = User.Identities.FirstOrDefault()!.FindFirst(ClaimTypes.NameIdentifier)!.Value;
+            shoppingCart.UserNameIdentifier = claim;
 
             ShoppingCartLine excart = unitOfWork.ShoppingCartLine.GetFirstOrDefault(
-                u => u.UserNameIdentifier == claim.Value && u.ProductId == shoppingCart.ProductId);
-            if (excart == null)
+                u => u.UserNameIdentifier == claim && u.ProductId == shoppingCart.ProductId);
+            if (ModelState.IsValid)
             {
-                unitOfWork.ShoppingCartLine.Add(shoppingCart);
-                unitOfWork.Save();
+                if (excart == null)
+                {
+                    excart = new()
+                    {
+                        UserNameIdentifier = claim,
+                        ProductId = shoppingCart.ProductId,
+                        Count = 1,
+                    };
+                    unitOfWork.ShoppingCartLine.Add(excart);
+                }
+                else
+                {
+                    unitOfWork.ShoppingCartLine.IncrementCount(excart, shoppingCart.Count);
+                }
                 HttpContext.Session.SetInt32(StringDefault.SessionCart,
-                    unitOfWork.ShoppingCartLine.GetAll(u => u.UserNameIdentifier == claim.Value).ToList().Count);
+                       unitOfWork.ShoppingCartLine.GetAll(u => u.UserNameIdentifier == claim).ToList().Count);
+                await unitOfWork.Save();
             }
-            else
-            {
-                unitOfWork.ShoppingCartLine.IncrementCount(excart, shoppingCart.Count);
-                unitOfWork.Save();
-            }
-            return RedirectToAction(nameof(Index), "Home");
+            return RedirectToAction(nameof(Index));
         }
 
 

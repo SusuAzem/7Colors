@@ -7,7 +7,8 @@
     bool click;
     if (User!.Identity!.IsAuthenticated)
     {
-        click = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)!.Value == StringDefault.AdminEmail ? true : false;
+        var vaue = User.Claims.FirstOrDefault(m => m.Type == ClaimTypes.Email)!.Value;
+        click = vaue == StringDefault.AdminEmail1 || vaue == StringDefault.AdminEmail2 ? true : false;
     }
     else
     {

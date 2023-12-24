@@ -14,6 +14,7 @@ using _7Colors.Data.IRepository;
 using _7Colors.Data.Repository;
 using Microsoft.AspNetCore.DataProtection;
 using System.Security.Cryptography.X509Certificates;
+using Newtonsoft.Json.Linq;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -27,17 +28,8 @@ builder.Configuration
 builder.Services.AddDbContext<AppDbContext>(op =>
     op.UseSqlServer(builder.Configuration.GetConnectionString("ServerConnection")));
 
-//builder.Services.Configure<IISServerOptions>(options =>
-//{
-//    options.AutomaticAuthentication = false;
-//});
-
-//var httpsConnectionAdapterOptions = new HttpsConnectionAdapterOptions
-//{
-//    SslProtocols = System.Security.Authentication.SslProtocols.Tls12,
-//    ClientCertificateMode = ClientCertificateMode.AllowCertificate,
-//    ServerCertificate = new X509Certificate2("./Lets_Encrypt_7sevencolors.com.pfx", "Ss12345*")
-//};
+//builder.Services.AddDbContext<AppDbContext>(op =>
+//    op.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 
 builder.Services.AddSession(op =>
@@ -49,7 +41,7 @@ builder.Services.AddSession(op =>
 builder.Services.AddLogging(builder => builder.AddDebug());
 builder.Services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.TryAddSingleton<IEmailSender, EmailSender>();
-builder.Services.Configure<MailSettings>(builder.Configuration.GetSection("SmtpSettings"));
+builder.Services.Configure<MailSettings>(builder.Configuration.GetSection("Settings"));
 builder.Services.AddTransient<IMailService, MailService>();
 builder.Services.AddTransient<IFileManager, FileManager>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
@@ -78,7 +70,8 @@ builder.Services
         options.Events.OnTicketReceived = ctx =>
         {
             var user = ctx.Principal!.Identities.FirstOrDefault();
-            if (user!.Claims.FirstOrDefault(m => m.Type == ClaimTypes.Email)!.Value == StringDefault.AdminEmail)
+            var value = user!.Claims.FirstOrDefault(m => m.Type == ClaimTypes.Email)!.Value;
+            if (value == StringDefault.AdminEmail1 || value ==StringDefault.AdminEmail2)
             {
                 user.AddClaim(new Claim(ClaimTypes.Role, "Admin"));
                 user.AddClaim(new Claim(type: "Registered", "true"));
@@ -110,7 +103,7 @@ builder.Services.AddDataProtection()
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("Admin", policy =>
-    policy.RequireClaim(ClaimTypes.Email, StringDefault.AdminEmail));
+    policy.RequireClaim(ClaimTypes.Email, StringDefault.AdminEmail1, StringDefault.AdminEmail2));
 
     options.AddPolicy("Teacher", policy =>
     policy.RequireClaim(ClaimTypes.Role, "Teacher"));

@@ -17,7 +17,7 @@ namespace _7Colors.Controllers
         private readonly ILogger<HomeController> _logger;
         private readonly IUnitOfWork unitOfWork;
         private readonly IEmailSender sender;
-        IMailService mailService;
+        private readonly IMailService mailService;
 
         public AccountController(ILogger<HomeController> logger, IUnitOfWork unitOfWork,
             IEmailSender sender, IMailService mailService)
@@ -77,10 +77,8 @@ namespace _7Colors.Controllers
         public async Task<IActionResult> Account(UserViewModel user, string nameId)
         {
             var exuser = unitOfWork.User.GetFirstOrDefault(u => u.NameIdentifier == nameId);
-            if (exuser == null)
-            {
-                exuser = await UserHalfReg();
-            }
+            exuser ??= await UserHalfReg();
+
             if (ModelState.IsValid)
             {
                 if (exuser.Email == user.Email && exuser.NameIdentifier == user.Nameidentifier)
@@ -98,7 +96,7 @@ namespace _7Colors.Controllers
                     User.Identities.FirstOrDefault()!.AddClaim(new Claim(type: "Registered", "true"));
                     User.Identities.FirstOrDefault()!.AddClaim(new Claim(type: "Role", exuser.Role!));
                     unitOfWork.User.Update(exuser);
-                    unitOfWork.Save();
+                    await unitOfWork.Save();
                     await mailService.SendMailAsync(new MailData
                     {
                         ToId = user.Email!,
@@ -134,7 +132,7 @@ namespace _7Colors.Controllers
             var result = await HttpContext.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);
 
             var email = result.Principal!.FindFirstValue(ClaimTypes.Email);
-            if (email == StringDefault.AdminEmail)
+            if (email == StringDefault.AdminEmail1 || email == StringDefault.AdminEmail2)
                 return await AdminReg(email);
 
             var nameId = result.Principal!.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -143,10 +141,8 @@ namespace _7Colors.Controllers
             if (nameId != null)
             {
                 var exuser = unitOfWork.User.GetFirstOrDefault(u => u.NameIdentifier == nameId);
-                if (exuser == null)
-                {
-                    exuser = await UserHalfReg();
-                }
+                exuser ??= await UserHalfReg();
+
                 if (exuser != null & !exuser!.Registered)
                 {
                     User.Identities.FirstOrDefault()!.AddClaim(new Claim(type: "Role", value: exuser.Role!));
@@ -177,7 +173,7 @@ namespace _7Colors.Controllers
                 Subject = "مرحباً بك",
                 Body = "\\templates\\Hello.html",
             });
-            unitOfWork.Save();
+            await unitOfWork.Save();
             TempData["Login"] = "الرجاء إكمال معلومات التسجيل";
             return user;
         }
@@ -208,7 +204,7 @@ namespace _7Colors.Controllers
                     Subject = "مرحباً بالأدمن",
                     Body = "\\templates\\HelloAdmin.html",
                 });
-                unitOfWork.Save();
+                await unitOfWork.Save();
                 TempData["ARegister"] = "لقد تم إكمال تسجيل معلومات المسؤول بنجاح";
                 return RedirectToAction(nameof(Index), "Home");
             }
@@ -229,14 +225,14 @@ namespace _7Colors.Controllers
         [HttpPost]
         public JsonResult NotEqualEmail(string ParentEmail, string Email)
         {
-            var valid = ParentEmail == Email ? false : true;
+            var valid = ParentEmail != Email;
             return Json(valid);
         }
 
         [HttpPost]
         public JsonResult NotEqualPhone(string ParentPhone, string Phone)
         {
-            var valid = ParentPhone == Phone ? false : true;
+            var valid = ParentPhone != Phone;
             return Json(valid);
         }
 

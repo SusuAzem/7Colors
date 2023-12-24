@@ -1,5 +1,6 @@
 ﻿@using System.Globalization
-@model _7Colors.Models.ShoppingCartLine
+@using _7Colors.Services
+@model _7Colors.ViewModels.ShoppingCartLineViewModel
 
 @{
     ViewData["Title"] = "تفاصيل المنتج";
@@ -10,15 +11,15 @@
     <form asp-action="Detail" method="post" enctype="multipart/form-data">
         <div class="p-4 rounded border row">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="Id" />
+            @*             <input type="hidden" asp-for="Id" /> *@
+            <input type="hidden" asp-for="ProductId" />
             <div class="col-7">
-
                 <div class="form-group row">
                     <div class="col-md-4">
                         <label asp-for="Product!.Name"></label>
                     </div>
                     <div class="col-md-8">
-                        <label asp-for="Product!.Name" class="form-control" />@Model.Product!.Name
+                        <input asp-for="Product!.Name" class="form-control" disabled />
                     </div>
                     <span asp-validation-for="Product!.Name" class="text-danger"></span>
                 </div>
@@ -28,18 +29,16 @@
                         <label asp-for="Product!.Price"></label>
                     </div>
                     <div class="col-md-8">
-                        <label asp-for="Product!.Price" class="form-control" />
-                        @Model.Product!.Price.ToString("c", new CultureInfo("ar-SA"))
+                        <input asp-for="Product!.Price" class="form-control" disabled value="@Model.Product!.Price.ToString("c", new CultureInfo("ar-SA")).ConvertNumerals()" />
                     </div>
                     <span asp-validation-for="Product!.Price" class="text-danger"></span>
                 </div>
-
                 <div class="form-group row">
                     <div class="col-md-4">
                         <label asp-for="Product!.ProductColor"></label>
                     </div>
                     <div class="col-md-8">
-                        <label asp-for="Product!.ProductColor" class="form-control" /> @Model.Product!.ProductColor
+                        <input asp-for="Product!.ProductColor" class="form-control" disabled/> 
                     </div>
                     <span asp-validation-for="Product!.ProductColor" class="text-danger"></span>
                 </div>
@@ -49,7 +48,7 @@
                         <label asp-for="Product!.TypeId"></label>
                     </div>
                     <div class="col-md-8">
-                        <label asp-for="Product!.TypeId" class="form-control" />@Model.Product!.ProductType!.Type
+                        <input asp-for="Product!.ProductType!.Type" class="form-control" disabled/>
                     </div>
                     <span asp-validation-for="Product!.TypeId" class="text-danger"></span>
                 </div>
@@ -59,7 +58,7 @@
                         <label asp-for="Count"></label>
                     </div>
                     <div class="col-md-8">
-                        <label asp-for="Count" class="form-control" /> @Model.Count
+                        <input asp-for="Count" class="form-control" dir="rtl"/>
                     </div>
                     <span asp-validation-for="Count" class="text-danger"></span>
                 </div>
@@ -70,7 +69,7 @@
                         <div class="col-md-4">
                             <label class="avaL" asp-for="Product!.IsAvailable"></label>
                             <img src="~/images/instock.png" class="in" />
-                         </div>
+                        </div>
                         <div class="col-md-8">
                             <input type="submit" class="btn" value="إضافة إلى العربة" />
                         </div>
@@ -80,11 +79,11 @@
                         <div class="col-md-4">
                             <label class="avaL" asp-for="Product!.IsAvailable"></label>
                             <img src="~/images/notinstock.png" class="out" />
-                            </div>
+                        </div>
                         <div class="col-md-8">
                             <input type="submit" class="btn" value="إضافة إلى العربة" disabled />
                         </div>
-                    }                    
+                    }
                 </div>
                 <div class="form-group">
                     <a asp-action="Index" class="btn" title="رجوع للخلف">عودة للقائمة</a>

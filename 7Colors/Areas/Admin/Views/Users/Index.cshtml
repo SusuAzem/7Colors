@@ -41,10 +41,10 @@
                     url: "//cdn.datatables.net/plug-ins/1.13.7/i18n/ar.json",
                 },
                 columns: [
-                    { data: "name", with: "10%" },
-                    { data: "email", with: "30%" },
-                    { data: "phoneNumber", with: "10%" },
-                    { data: "role", with: "10%" },
+                    { data: "name", width: "10%" },
+                    { data: "email", width: "30%" },
+                    { data: "phone", width: "10%" },
+                    { data: "role", width: "10%" },
                     {
                         data: {
                             id: "id", lockoutEnd: "lockoutEnd"
@@ -55,67 +55,59 @@
                             if (lockout > today) {
                                 //user is currently locked
                                 return `
-                                                               <td style = "width:150px">
-                                                                    <div class="btn-group">
-                                                                        <a class="btn" title="تعيين المستخدم كمعلم"
-                                                                            href="/Admin/Users/Upgrade?id='${data.id}' ">
-                                                                            <i class="fa fa-arrow-up" ></i>
-                                                                        </a>
-                                                                        <a class="btn" title="تعيين المستخدم كطالب"
-                                                                                    href="/Admin/Users/Downgrade?id='${data.id}' ">
-                                                                            <i class="fa fa-arrow-down"></i>
-                                                                        </a>
-                                                                        <a onclick=LockUnlock('${data.id}') class="btn btn-danger"
-                                                                                title="تفعيل المستخدم">
-                                                                             <i class="fa fa-lock-open"></i>
-                                                                       </a>
-                                                                        <a id="userDel" class= "btn danger" title="حذف المستخدم"
-                                                                                    href="/Admin/Users/Block?id='${data.id}' ">
-                                                                            <i class="fa fa-trash"></i>
-                                                                        </a>
-                                                                    </div>
-                                                                </td>
-                                                                   `;
+                                                    <td style = "width:150px">
+                                                        <div class="btn-group">
+                                                            <a class="btn" title="تعيين المستخدم كمعلم"
+                                                                href="/Admin/Users/Upgrade?id='${data.id}' ">
+                                                                <i class="fa fa-arrow-up" ></i>
+                                                            </a>
+                                                            <a class="btn" title="تعيين المستخدم كطالب"
+                                                                        href="/Admin/Users/Downgrade?id='${data.id}' ">
+                                                                <i class="fa fa-arrow-down"></i>
+                                                            </a>
+                                                            <a href="/Admin/Users/LockUnlock?id='${data.id}' "
+                                                                    class="btn danger" title="تفعيل المستخدم">
+                                                                <i class="fa fa-unlock-alt"></i>
+                                                            </a>
+                                                            <a id="userDel" class= "btn danger" title="حذف المستخدم"
+                                                                        href="/Admin/Users/Block?id='${data.id}' ">
+                                                                <i class="fa fa-trash"></i>
+                                                            </a>
+                                                        </div>
+                                                    </td>
+                                                        `;
                             }
                             else {
                                 return `
-                                <td style = "width:150px">
-                                    <div class="btn-group">
-                                        <a class="btn" title="تعيين المستخدم كمعلم"
-                                            href="/Admin/Users/Upgrade?id='${data.id}' ">
-                                            <i class="fa fa-arrow-up" ></i>
-                                        </a>
-                                        <a class="btn" title="تعيين المستخدم كطالب"
-                                                    href="/Admin/Users/Downgrade?id='${data.id}' ">
-                                            <i class="fa fa-arrow-down"></i>
-                                        </a>
-                                        <a onclick=LockUnlock('${data.id}') class="btn btn-danger"
-                                                title="حجب المستخدم">
-                                                <i class="fa fa-lock-open"></i>
-                                        </a>
-                                        <a id="userDel" class= "btn danger" title="حذف المستخدم"
-                                                    href="/Admin/Users/Block?id='${data.id}' ">
-                                            <i class="fa fa-trash"></i>
-                                        </a>
-                                    </div>
-                                </td>
-                                    `;
+                                                <td style = "width:150px">
+                                                    <div class="btn-group">
+                                                        <a class="btn" title="تعيين المستخدم كمعلم"
+                                                            href="/Admin/Users/Upgrade?id='${data.id}' ">
+                                                            <i class="fa fa-arrow-up" ></i>
+                                                        </a>
+                                                        <a class="btn" title="تعيين المستخدم كطالب"
+                                                                    href="/Admin/Users/Downgrade?id='${data.id}' ">
+                                                            <i class="fa fa-arrow-down"></i>
+                                                        </a>
+                                                        <a class="btn danger" title="حجب المستخدم"
+                                                                href="/Admin/Users/LockUnlock?id='${data.id}' ">
+                                                                <i class="fa fa-lock"></i>
+                                                        </a>
+                                                        <a id="userDel" class= "btn danger" title="حذف المستخدم"
+                                                                    href="/Admin/Users/Block?id='${data.id}' ">
+                                                                    <i class="fa fa-trash"></i>
+                                                        </a>
+                                                    </div>
+                                                </td>
+                                                    `;
                             }
 
-                        }, "width": "25%"
-                    }
-                    //         {
-                    //     with: "20%",
-                    //     data: "id",
-                    //     orderable: false,
-                    //     render: function (data) {
-                    //         return '<td style = "width:150px"><div class="btn-group"><a class="btn" title="تعيين المستخدم كمعلم" href="/Admin/Users/Upgrade?id=' + data + ' "><i class="fa fa-arrow-up" ></i></a><a class="btn" title="تعيين المستخدم كطالب" href="/Admin/Users/Downgrade?id=' + data + ' "><i class="fa fa-arrow-down"></i></a><a id="userDel" class= "btn danger" title="حذف المستخدم" href="/Admin/Users/Block?id=' + data + ' "><i class="fa fa-trash"></i></a></div></td> ';
-                    //     }
-                    // }
+                        }, width: "25%"
+                    }                 
                 ]
             })
         })
-            ("#userData a#userDel").on("click", function () {
+        $("#userData a#userDel").on("click", function () {
                 alert("تحذير : ستقوم بحذف المستخدم. لا تقم بهذا إلا في الحالات القصوى");
                 return false;
             });
@@ -132,24 +124,10 @@
             if (block != "") {
                 alertify.error(block);
             }
+            var lock = '@TempData["lock"]';
+            if (lock != "") {
+                toastr.success(lock);
+            }
         });
-
-        function LockUnlock(id) {
-            $.ajax({
-                type: "POST",
-                url: '/Admin/User/LockUnlock',
-                data: JSON.stringify(id),
-                contentType: "application/json",
-                success: function (data) {
-                    if (data.success) {
-                        toastr.success(data.message);
-                        dataTable.ajax.reload();
-                    }
-                    else {
-                        toastr.error(data.message);
-                    }
-                }
-            });
-        }
     </script>
 }

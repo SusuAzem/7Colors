@@ -86,7 +86,7 @@ namespace _7Colors.Data
         public AppDbContext CreateDbContext(string[] args)
         {
             var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
-            optionsBuilder.UseSqlServer("Data Source=sql2022-001.adaptivewebhosting.com,1433;Initial Catalog=sevencol_db");
+            optionsBuilder.UseSqlServer("Data Source=sql2022-001.adaptivewebhosting.com,1433;Initial Catalog=sevencol_db;User Id=7cadmin;Password=SqlS12345*;TrustServerCertificate=True;Trusted_Connection=true;encrypt=false;Integrated Security=false");
 
             return new AppDbContext(optionsBuilder.Options);
         }

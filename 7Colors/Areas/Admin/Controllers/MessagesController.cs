@@ -21,30 +21,30 @@ namespace _7Colors.Areas.Admin.Controllers
             return View();
         }
 
-        #region API CALLS
-        [HttpGet]
-        public IActionResult GetAll()
-        {
-            var messages = _context.Messages.ToList();
-            return Json(new { data = messages });
-        }
+        //#region API CALLS
+        //[HttpGet]
+        //public IActionResult GetAll()
+        //{
+        //    var messages = _context.Messages.ToList();
+        //    return Json(new { data = messages });
+        //}
 
-        [HttpDelete]
-        public IActionResult Delete(int id)
-        {
-            var message = _context.Messages.FirstOrDefault(m => m.Id == id);
-            if (message == null)
-            {
-                return Json(new { success = false, message = "خطأ بعملية الحذف" });
-            }
+        //[HttpDelete]
+        //public IActionResult Delete(int id)
+        //{
+        //    var message = _context.Messages.FirstOrDefault(m => m.Id == id);
+        //    if (message == null)
+        //    {
+        //        return Json(new { success = false, message = "خطأ بعملية الحذف" });
+        //    }
 
-            _context.Messages.Remove(message);
-            _context.SaveChanges();
+        //    _context.Messages.Remove(message);
+        //    _context.SaveChanges();
 
-            return Json(new { success = true, message = "تم الحذف بنجاح" });
-        }
+        //    return Json(new { success = true, message = "تم الحذف بنجاح" });
+        //}
 
-        #endregion
+        //#endregion
 
     }
 }

@@ -14,6 +14,6 @@ namespace _7Colors.Data.IRepository
         IImageRepository Image { get; }
         IPostRepository Post { get; }
 
-        void Save();
+        Task Save();
     }
 }

@@ -31,20 +31,20 @@ for (let i = 0; i < btns.length; i++) {
         displayProducts(filterProducts);
     });
 }
+//<ul class="icons">
+//    <li>
+//        <a href="/ECommerce/Home/AddToCart/${product.id}">
+//            <i class="fa fa-shopping-bag"></i>
+//        </a>
+//    </li>
+//</ul>
 const displayProducts = (products) => {
     const htmlTemplate = products
         .map((product) => {
             return `
             <div class="col-md-4">
                         <div class="card pro">
-                            <div class="cardHeader">
-                                <ul class="icons">                                    
-                                    <li>                                   
-                                         <a href="/ECommerce/Home/AddToCart/${product.id}">
-                                        <i class="fa fa-shopping-bag"></i>
-                                        </a>
-                                    </li>
-                                </ul>
+                            <div class="cardHeader">                               
                                 <img class="card-img-top" src="${product.img}" alt="card image">
                             </div>
                             <div class="card-body">

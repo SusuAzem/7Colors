@@ -38,7 +38,7 @@ namespace _7Colors.Areas.Admin.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(Product pro, IFormFile Image)
+        public async Task<IActionResult> CreateAsync(Product pro, IFormFile Image)
         {
             var types  = new SelectList(unitOfWork.ProductType.GetAll(), "Id", "Type");
             var tags = new SelectList(unitOfWork.SpecialTag.GetAll(), "Id", "Name");
@@ -63,7 +63,7 @@ namespace _7Colors.Areas.Admin.Controllers
             if (ModelState.IsValid)
             {
                 unitOfWork.Product.Add(pro);
-                unitOfWork.Save();
+                await unitOfWork.Save();
                 TempData["Create"] = "لقد تم إضافة المنتج";
                 return RedirectToAction(nameof(Index));
             }
@@ -108,7 +108,7 @@ namespace _7Colors.Areas.Admin.Controllers
             if (ModelState.IsValid)
             {
                 unitOfWork.Product.Update(pro);
-                unitOfWork.Save();
+                await unitOfWork.Save();
                 TempData["Edit"] = "لقد تم تعديل المنتج";
                 return RedirectToAction(nameof(Index));
             }
@@ -145,7 +145,7 @@ namespace _7Colors.Areas.Admin.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public  IActionResult Delete(int? id, Product pro)
+        public async Task<IActionResult> DeleteAsync(int? id, Product pro)
         {
             if (id == null)
             {
@@ -163,7 +163,7 @@ namespace _7Colors.Areas.Admin.Controllers
             if (ModelState.IsValid)
             {
                 unitOfWork.Product.Remove(p);
-                unitOfWork.Save();
+                await unitOfWork.Save();
                 TempData["Delete"] = "لقد تم حذف المنتج";
                 return RedirectToAction(nameof(Index));
             }
@@ -195,7 +195,7 @@ namespace _7Colors.Areas.Admin.Controllers
         //    }
 
         //    unitOfWork.Product.Remove(obj);
-        //    unitOfWork.Save();
+        //    await unitOfWork.Save();
         //    return Json(new { success = true, message = "تم الحذف بنجاح" });
 
         //}

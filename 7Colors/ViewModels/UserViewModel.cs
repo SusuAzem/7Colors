@@ -32,7 +32,7 @@ namespace _7Colors.ViewModels
 
         [Required(ErrorMessage = "حقل الرقم مطلوب")]
         [Display(Name = "الرقم")]
-        [RegularExpression("/^(05)([0-9]{8})$/", ErrorMessage = "الرقم يبدأ ب 05")]
+        [RegularExpression(@"^(05)(5|0|3|6|4|9|1|8|7)([0-9]{7})$", ErrorMessage = "الرقم يبدأ ب 05")]
         public string? Phone { get; set; }
 
         [Required(ErrorMessage = "حقل البريد الالكتروني لولي الأمر مطلوب")]
@@ -46,7 +46,7 @@ namespace _7Colors.ViewModels
         [Display(Name = "رقم ولي الأمر")]        
         [Remote("NotEqualPhone", "Account", AdditionalFields = "Phone",
             ErrorMessage = "رقم ولي الأمر يجب أن لا يطابق رقم المستخدم", HttpMethod = "post")]
-        [RegularExpression("/^(05)([0-9]{8})$/", ErrorMessage = "الرقم يبدأ ب 05")]
+        [RegularExpression(@"^(05)(5|0|3|6|4|9|1|8|7)([0-9]{7})$", ErrorMessage = "الرقم يبدأ ب 05")]
         public string? ParentPhone { get; set; }
 
         [Required(ErrorMessage = "حقل الشارع مطلوب")]

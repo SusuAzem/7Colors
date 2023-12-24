@@ -68,7 +68,7 @@ namespace _7Colors.Areas.Admin.Controllers
             if (ModelState.IsValid)
             {
                 unitOfWork.Image.Add(img);
-                unitOfWork.Save();
+                await unitOfWork.Save();
                 TempData["Create"] = "لقد تم إضافة الصورة";
                 return RedirectToAction(nameof(Index));
             }
@@ -107,7 +107,7 @@ namespace _7Colors.Areas.Admin.Controllers
             if (ModelState.IsValid)
             {
                 unitOfWork.Image.Update(img);
-                unitOfWork.Save();
+                await unitOfWork.Save();
                 TempData["Edit"] = "لقد تم تعديل الصورة";
                 return RedirectToAction(nameof(Index));
             }
@@ -146,7 +146,7 @@ namespace _7Colors.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Delete(int? id, Image img)
+        public async Task<IActionResult> DeleteAsync(int? id, Image img)
         {
             if (id == null)
             {
@@ -164,7 +164,7 @@ namespace _7Colors.Areas.Admin.Controllers
             if (ModelState.IsValid)
             {
                 unitOfWork.Image.Remove(p);
-                unitOfWork.Save();
+                await unitOfWork.Save();
                 TempData["Delete"] = "لقد تم حذف الصورة";
                 return RedirectToAction(nameof(Index));
             }

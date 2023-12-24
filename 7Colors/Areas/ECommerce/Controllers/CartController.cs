@@ -2,12 +2,9 @@
 using _7Colors.Models;
 using _7Colors.Services;
 using _7Colors.ViewModels;
-
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-
 using Stripe.Checkout;
-
 using System.Security.Claims;
 
 namespace _7Colors.Areas.ECommerce.Controllers
@@ -69,7 +66,7 @@ namespace _7Colors.Areas.ECommerce.Controllers
         [HttpPost]
         [ActionName("Summary")]
         [ValidateAntiForgeryToken]
-        public IActionResult SummaryPOST()
+        public async Task<IActionResult> SummaryPOSTAsync()
         {
             var claim = User.Identities.FirstOrDefault()!.FindFirst(ClaimTypes.NameIdentifier);
             User user = unitOfWork.User.GetFirstOrDefault(u => u.NameIdentifier == claim!.Value);
@@ -86,7 +83,7 @@ namespace _7Colors.Areas.ECommerce.Controllers
                 VM.OrderHeader.OrderTotal += cartLine.LinePrice;
             }
             unitOfWork.OrderHeader.Add(VM.OrderHeader);
-            unitOfWork.Save();
+            await unitOfWork.Save();
 
             //VM.OrderHeader.PaymentStatus = StringDefault.PaymentStatusDelayedPayment;
             //VM.OrderHeader.OrderStatus = StringDefault.StatusApproved;
@@ -101,7 +98,7 @@ namespace _7Colors.Areas.ECommerce.Controllers
                     Count = cart.Count
                 };
                 unitOfWork.OrderItem.Add(orderItem);
-                unitOfWork.Save();
+                await unitOfWork.Save();
             }           
                 //stripe settings 
                 var domain = "https://localhost:44349/";
@@ -137,13 +134,13 @@ namespace _7Colors.Areas.ECommerce.Controllers
                 var service = new SessionService();
                 Session session = service.Create(options);
                 unitOfWork.OrderHeader.UpdateStripePaymentID(VM.OrderHeader.Id, session.Id, session.PaymentIntentId);
-                unitOfWork.Save();
+                await unitOfWork.Save();
                 Response.Headers.Append("Location", session.Url);
             return new StatusCodeResult(303);
             //return RedirectToAction("OrderConfirmation", "Cart", new { id = VM.OrderHeader.Id }, new StatusCodeResult(303).ToString());
             }
         
-        public IActionResult OrderConfirmation(int id)
+        public async Task<IActionResult> OrderConfirmationAsync(int id)
         {
             OrderHeader orderHeader = unitOfWork.OrderHeader.GetFirstOrDefault(u => u.Id == id, includeProperties: "User");
             if (orderHeader.PaymentStatus != StringDefault.PaymentStatusDelayedPayment)
@@ -155,28 +152,28 @@ namespace _7Colors.Areas.ECommerce.Controllers
                 {
                     unitOfWork.OrderHeader.UpdateStripePaymentID(id, orderHeader.SessionId!, session.PaymentIntentId);
                     unitOfWork.OrderHeader.UpdateStatus(id, StringDefault.StatusApproved, StringDefault.PaymentStatusApproved);
-                    unitOfWork.Save();
+                    await unitOfWork.Save();
                 }
             }
-            emailSender.SendEmailAsync(orderHeader.User!.Email!, "طلب جديد - الألوان السبعة", "<p>تم إنشاء طلب جديد</p>");
+            await emailSender.SendEmailAsync(orderHeader.User!.Email!, "طلب جديد - الألوان السبعة", "<p>تم إنشاء طلب جديد</p>");
             List<ShoppingCartLine> shoppingCarts = unitOfWork.ShoppingCartLine.GetAll(u => u.UserNameIdentifier ==
             orderHeader.UserNameIdentifier).ToList();
             HttpContext.Session.Clear();
             unitOfWork.ShoppingCartLine.RemoveRange(shoppingCarts);
-            unitOfWork.Save();
+            await unitOfWork.Save();
             return View(id);
         }
 
 
-        public IActionResult Plus(int cartId)
+        public async Task<IActionResult> PlusAsync(int cartId)
         {
             var cart = unitOfWork.ShoppingCartLine.GetFirstOrDefault(c => c.Id == cartId);
             unitOfWork.ShoppingCartLine.IncrementCount(cart, 1);
-            unitOfWork.Save();
+            await unitOfWork.Save();
             return RedirectToAction(nameof(Index));
         }
 
-        public IActionResult Minus(int cartId)
+        public async Task<IActionResult> MinusAsync(int cartId)
         {
             var cart = unitOfWork.ShoppingCartLine.GetFirstOrDefault(c => c.Id == cartId);
 
@@ -188,16 +185,16 @@ namespace _7Colors.Areas.ECommerce.Controllers
             {
                 unitOfWork.ShoppingCartLine.DecrementCount(cart, 1);
             }
-            unitOfWork.Save();
+            await unitOfWork.Save();
             return RedirectToAction(nameof(Index));
         }
 
-        public IActionResult Remove(int cartId)
+        public async Task<IActionResult> RemoveAsync(int cartId)
         {
             var cart = unitOfWork.ShoppingCartLine.GetFirstOrDefault(c => c.Id == cartId);
 
             unitOfWork.ShoppingCartLine.Remove(cart);
-            unitOfWork.Save();
+            await unitOfWork.Save();
             return RedirectToAction(nameof(Index));
         }
     }
