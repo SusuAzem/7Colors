@@ -1,5 +1,5 @@
 ﻿@using _7Colors.Services
-@model IEnumerable<_7Colors.Models.Post>
+@model IEnumerable<_7Colors.ViewModels.PostViewModel>
 
 @{
     ViewData["Title"] = "قائمة مواضيع الصفحة الرئيسية";
@@ -21,13 +21,13 @@
             </div>
             <br />
             <div>
-                <table class="table table-striped border" id="myTable">
+                <table class="table table-responsive p-2 table-striped border" id="myTable">
                     <thead>
                         <tr class="table-info">
                             <th>@Html.DisplayNameFor(c => c.Title)</th>
                             <th>@Html.DisplayNameFor(c => c.Description)</th>
-                            <th>الصور</th>
-                            <th>@Html.DisplayNameFor(c => c.Created)</th>
+                           @*  <th>الصور</th>
+                            <th>@Html.DisplayNameFor(c => c.Created)</th> *@
                             <th width="140px">خيارات</th>
                         </tr>
                     </thead>
@@ -36,22 +36,28 @@
                         {
                             <tr>
                                 <td>@item.Title</td>
-                                @if (item.Description!.Count() > 100)
-                                {
-                                    <td>
-                                        <a href="#Modal" data-bs-toggle="modal" data-bs-target="#Modal"
-                                           data-text="@item.Description" data-title="@item.Title" class="show">نص الموضوع</a>
-                                    </td>
+                                @if (item.Description != null) {
+                                    if (item.Description.Count() > 100)
+                                    {
+                                        <td>
+                                            <a href="#Modal" data-bs-toggle="modal" data-bs-target="#Modal"
+                                            data-text="@item.Description" data-title="@item.Title" class="show">نص الموضوع</a>
+                                        </td>
+                                    }
+                                    else if (item.Description!.Count() < 100)
+                                    {
+                                        <td>@item.Description</td>
+                                    }
                                 }
                                 else
                                 {
-                                    <td>@item.Description</td>
+                                    <td>لايوجد وصف</td>
                                 }
-                                <td>
+                              @*   <td>
                                     <a asp-controller="Images" asp-action="Index" asp-route-id="@item.Id">قائمة صور الموضوع</a>
                                     (@item.Images.Count().ToString().ConvertNumerals())
                                 </td>
-                                <td>@item.Created.Date.ToString("yyyy/MM/dd").ConvertNumerals()</td>
+                                <td>@item.Created.Date.ToString("yyyy/MM/dd").ConvertNumerals()</td> *@
                                 <partial name="_Buttons" model="@item.Id" />
                             </tr>
                         }
@@ -98,20 +104,6 @@
         $('#Modal').on('hidden.bs.modal', function () {
             $("#Modal div.modal-body p").text("")
             $("#Modal h5.modal-title").text("");
-        })
-        $(function () {
-            var create = '@TempData["create"]'
-            if (create != '') {
-                alertify.success(create);
-            }
-            var edit = '@TempData["edit"]'
-            if (edit != '') {
-                alertify.success(edit);
-            }
-            var del = '@TempData["delete"]'
-            if (del != '') {
-                alertify.error(del);
-            }
         })
     </script>
 }

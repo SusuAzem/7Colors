@@ -1,6 +1,8 @@
 ﻿using _7Colors.Data;
 using _7Colors.Models;
 
+using AspNetCoreHero.ToastNotification.Abstractions;
+
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,10 +13,12 @@ namespace _7Colors.Areas.Admin.Controllers
     public class ProductTypesController : Controller
     {
         private readonly AppDbContext context;
+        private readonly INotyfService toastNotification;
 
-        public ProductTypesController(AppDbContext context)
+        public ProductTypesController(AppDbContext context, INotyfService toastNotification)
         {
             this.context = context;
+            this.toastNotification = toastNotification;
         }
         public IActionResult Index()
         {
@@ -33,7 +37,7 @@ namespace _7Colors.Areas.Admin.Controllers
             {
                 context.ProductTypes.Add(protype);
                 await context.SaveChangesAsync();
-                TempData["Create"] = "لقد تم إضافة نوع المنتج";
+                toastNotification.Success("لقد تم إضافة نوع المنتج");
                 return RedirectToAction(nameof(Index));
             }
             return View(protype);
@@ -60,7 +64,7 @@ namespace _7Colors.Areas.Admin.Controllers
             {
                 context.ProductTypes.Update(protype);
                 await context.SaveChangesAsync();
-                TempData["Edit"] = "لقد تم تعديل نوع المنتج";
+                toastNotification.Success("لقد تم تعديل نوع المنتج");
                 return RedirectToAction(nameof(Index));
             }
             return View(protype);
@@ -115,7 +119,7 @@ namespace _7Colors.Areas.Admin.Controllers
             {
                 context.ProductTypes.Remove(type);
                 await context.SaveChangesAsync();
-                TempData["Delete"] = "لقد تم حذف نوع المنتج";
+                toastNotification.Information("لقد تم حذف نوع المنتج");
                 return RedirectToAction(nameof(Index));
             }
             return View(type);

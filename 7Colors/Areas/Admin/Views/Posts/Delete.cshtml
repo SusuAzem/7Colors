@@ -1,5 +1,5 @@
 ﻿@using _7Colors.Services
-@model _7Colors.Models.Post
+@model _7Colors.ViewModels.PostViewModel
 
 @{
     ViewData["Title"] = "حذف الموضوع";
@@ -11,7 +11,7 @@
     <div id="page-content-wrapper">      
         <div class="container-fluid">
             <h4 class="text-info">@ViewData["Title"]</h4>
-            <form method="post">
+            <form method="post" asp-action="Delete" asp-route-id="@Model.Id">
                 <div class="p-4 rounded border row">
                     <div asp-validation="ModelOnly" class="text-danger"></div>
                     <input type="hidden" asp-for="Id" />
@@ -45,7 +45,7 @@
                     <br />
                     <br />
                     <div class="form-group">
-                        <a type="button" asp-action="Delete" asp-route-id="@Model.Id" class="btn">الحذف</a>
+                        <input class="btn" type="submit" value="حذف" />
                         <a asp-action="Index" class="btn">العودة للقائمة</a>
                     </div>
                 </div>

@@ -14,10 +14,12 @@ using _7Colors.Data.IRepository;
 using _7Colors.Data.Repository;
 using Microsoft.AspNetCore.DataProtection;
 using System.Security.Cryptography.X509Certificates;
-using Newtonsoft.Json.Linq;
+using AspNetCoreHero.ToastNotification;
+using AspNetCoreHero.ToastNotification.Extensions;
 
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddAutoMapper(typeof(Program));
 builder.Configuration
     .SetBasePath(Directory.GetCurrentDirectory())
     .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
@@ -25,11 +27,10 @@ builder.Configuration
    .AddJsonFile("appsettings.Production.json", optional: true, reloadOnChange: true)
    .AddEnvironmentVariables();
 
-builder.Services.AddDbContext<AppDbContext>(op =>
-    op.UseSqlServer(builder.Configuration.GetConnectionString("ServerConnection")));
-
 //builder.Services.AddDbContext<AppDbContext>(op =>
-//    op.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+//    op.UseSqlServer(builder.Configuration.GetConnectionString("ServerConnection")));
+builder.Services.AddDbContext<AppDbContext>(op =>
+    op.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 
 builder.Services.AddSession(op =>
@@ -40,11 +41,16 @@ builder.Services.AddSession(op =>
 
 builder.Services.AddLogging(builder => builder.AddDebug());
 builder.Services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-builder.Services.TryAddSingleton<IEmailSender, EmailSender>();
 builder.Services.Configure<MailSettings>(builder.Configuration.GetSection("Settings"));
 builder.Services.AddTransient<IMailService, MailService>();
 builder.Services.AddTransient<IFileManager, FileManager>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddNotyf(config =>
+{
+    config.DurationInSeconds = 8;
+    config.IsDismissable = true;
+    config.Position = NotyfPosition.BottomRight;
+});
 
 builder.Services.AddControllersWithViews(
     options => options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true)
@@ -107,6 +113,10 @@ builder.Services.AddAuthorization(options =>
 
     options.AddPolicy("Teacher", policy =>
     policy.RequireClaim(ClaimTypes.Role, "Teacher"));
+
+    options.AddPolicy("Reg", policy => {
+        policy.RequireClaim(claimType: "Registered", allowedValues: "true");
+    });
 });
 
 var app = builder.Build();
@@ -129,7 +139,7 @@ app.UseRouting();
 app.UseSession();
 app.UseAuthentication();
 app.UseAuthorization();
-
+app.UseNotyf();
 app.MapAreaControllerRoute(
     name: "ECommerce",
     areaName: "ECommerce",

@@ -1,4 +1,4 @@
-﻿@model _7Colors.Models.Post
+﻿@model _7Colors.ViewModels.PostViewModel
 
 @{
     ViewData["Title"] = "تعديل الموضوع";
@@ -35,17 +35,16 @@
                     <div class="form-group row">
                         <div class="col-lg-3 imgL">
                             الصور :
-                      </div>
+                        </div>
                         <div class="col-lg-8">
                             <ul>
                                 @foreach (var i in Model.Images)
                                 {
                                     <li>
-                                       @*  <input type="checkbox" name="img" value="@i.Id" /> *@
-                                        <a asp-controller="Images" asp-action="Details" asp-route-id="@i.Id"> 
-                                            @i.Title 
-                                            <div><img src="@i.Url" /></div>
-                                        </a>                                       
+@*                                         <input type="checkbox" id="img" value="@i.Id" class="check" />*@                                        <a asp-controller="Images" asp-action="Details" asp-route-id="@i.Id">
+                                            @i.Title
+                                            <div class"ShH"><img src="@i.Url" /></div>
+                                        </a>
                                     </li>
                                 }
                             </ul>
@@ -77,32 +76,4 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
-    <script>
-        // var allVals = [];
-        // $(function () {
-        //     $('form input.btn').click(function () {
-        //         allVals = []
-        //         $('form input:checked').each(function () {
-        //             allVals.push($(this).val());
-        //             console.log($(this).val())
-        //         });
-        //         // var ids = JSON.stringify(allVals);
-        //         console.log(allVals);
-        //         $.ajax({
-        //             type: "POST",
-        //             url: "/Admin/Posts/EditPostImg",
-        //             data: { ids: allVals },
-        //             contentType: "application/json; charset=utf-8",
-        //             dataType: 'JSON',
-        //             traditional: true,
-        //             success: function (response) {
-        //                 console.log("OK! Data [" + allVals + "] Sent with Response:" + response);
-        //             },
-        //             error: function (e) {
-        //                 console.error("OH NOES! Data[" + allVals + "] Not sent with Error:" + e);
-        //             }
-        //         });
-        //     });
-        // });
-    </script>
-}
+@*     <script src="~/js/postimgedit.js"></script> *@}

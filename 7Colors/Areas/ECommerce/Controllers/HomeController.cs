@@ -6,6 +6,8 @@ using _7Colors.Data.IRepository;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using Microsoft.CodeAnalysis;
+using AspNetCoreHero.ToastNotification.Abstractions;
+using AutoMapper;
 
 namespace _7Colors.Areas.ECommerce.Controllers
 {
@@ -15,27 +17,34 @@ namespace _7Colors.Areas.ECommerce.Controllers
         private readonly ILogger<HomeController> logger;
         private readonly IUnitOfWork unitOfWork;
         private readonly IWebHostEnvironment hostEnvironment;
+        private readonly IMapper mapper;
+        private readonly INotyfService toastNotification;
 
         public HomeController(ILogger<HomeController> Logger, IUnitOfWork unitOfWork,
-            IWebHostEnvironment hostEnvironment)
+            IWebHostEnvironment hostEnvironment, IMapper mapper, INotyfService toastNotification)
         {
             logger = Logger;
             this.unitOfWork = unitOfWork;
             this.hostEnvironment = hostEnvironment;
+            this.mapper = mapper;
+            this.toastNotification = toastNotification;
         }
         public IActionResult Index()
-        {
-            IEnumerable<Product> productList =
-                unitOfWork.Product.GetAll(includeProperties: "ProductType,SpecialTag");
-            ViewData["Types"] = unitOfWork.ProductType.GetAll();
-            return View("Index", productList);
+        {            
+            var vm = new ProductListViewModel()
+            {
+                Products = unitOfWork.Product.GetAll(includeProperties: "ProductType,SpecialTag"),
+                Types = unitOfWork.ProductType.GetAll()
+            };
+            return View(vm);
         }
 
 
         [HttpGet]
         public JsonResult Data()
         {
-            var products = unitOfWork.Product.GetAll(includeProperties: "ProductType,SpecialTag").Select(p =>
+            var products = unitOfWork.Product.GetAll(includeProperties: "ProductType,SpecialTag")
+                .Select(p =>
             new { id = p.Id, name = p.Name, img = p.Image, type = p.ProductType!.Type, price = p.Price }).ToList();
             return Json(new { data = products });
         }
@@ -50,7 +59,7 @@ namespace _7Colors.Areas.ECommerce.Controllers
                 Count = 1,
                 ProductId = id,
                 LinePrice = p.Price,
-                Product = new(p)
+                Product = mapper.Map<ProductItemViewModel>(p),
             };
             return View(cartObj);
         }
@@ -85,11 +94,10 @@ namespace _7Colors.Areas.ECommerce.Controllers
                 HttpContext.Session.SetInt32(StringDefault.SessionCart,
                        unitOfWork.ShoppingCartLine.GetAll(u => u.UserNameIdentifier == claim).ToList().Count);
                 await unitOfWork.Save();
+                toastNotification.Success("لقد تم إضافة المنتج إلى سلة مشترياتك");
             }
             return RedirectToAction(nameof(Index));
         }
-
-
         //[ActionName("Remove")]
         //public IActionResult RemoveFromCart(int? id)
         //{
@@ -131,7 +139,6 @@ namespace _7Colors.Areas.ECommerce.Controllers
         //    }
         //    return View(products);
         //}
-
         #region API CALLS
         [HttpGet("api/products")]
         public ActionResult GetAll()

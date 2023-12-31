@@ -10,12 +10,6 @@ namespace _7Colors.Areas.Admin.Controllers
     [Authorize(Policy = "Admin")]
     public class MessagesController : Controller
     {
-        private readonly AppDbContext _context;
-
-        public MessagesController(AppDbContext context)
-        {
-            _context = context;
-        }
         public IActionResult Index()
         {
             return View();

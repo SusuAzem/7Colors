@@ -13,7 +13,7 @@
         @if (User.HasClaim("Registered", "true"))
         {
             <li class="nav-item ">
-                <a class="nav-link text-dark" asp-controller="Account" asp-action="Account" asp-route-nameId="@nameId">
+                <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Account" asp-route-nameId="@nameId">
                     مرحباً @User.Identity.Name
                 </a>
             </li>
@@ -21,7 +21,7 @@
          else
             {
             <li class="nav-item ">
-                <a class="nav-link text-color" asp-controller="Account" asp-action="Account" asp-route-nameId="@nameId" title="فضلاً أكمل بيانات حسابك">
+                <a class="nav-link text-color" asp-area="" asp-controller="Account" asp-action="Account" asp-route-nameId="@nameId" title="فضلاً أكمل بيانات حسابك">
                     مرحباً @User.Identity.Name
                 </a>
             </li>
@@ -33,18 +33,9 @@
     else
     {
         <li class="nav-item">
-          @*   <div class="g-signin2" data-onsuccess="onSignIn"> *@
-            <a class="nav-link text-dark " asp-area="" asp-controller="Account" asp-action="Login">تسجيل الدخول</a>
-@*             </div>
- *@        </li>
+            <a class="nav-link text-dark " asp-area="" asp-controller="Account" asp-action="Login" tooltip="تسجيل الدخول">
+                <img id="gl" src="~/images/web_light_rd_na@4x.png" alt="تسجيل الدخول"/>
+            </a>
+        </li>
     }
 </ul>
-
-@* <script>
-    function signOut() {
-        var auth2 = gapi.auth2.getAuthInstance();
-        auth2.signOut().then(function () {
-            console.log('User signed out.');
-        });
-    }
-</script> *@

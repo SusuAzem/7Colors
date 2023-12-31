@@ -1,6 +1,8 @@
 ﻿using _7Colors.Data;
 using _7Colors.Models;
 
+using AspNetCoreHero.ToastNotification.Abstractions;
+
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,10 +13,12 @@ namespace _7Colors.Areas.Admin.Controllers
     public class SpecialTagsController : Controller
     {
         private readonly AppDbContext context;
+        private readonly INotyfService toastNotification;
 
-        public SpecialTagsController(AppDbContext context)
+        public SpecialTagsController(AppDbContext context, INotyfService toastNotification)
         {
             this.context = context;
+            this.toastNotification = toastNotification;
         }
         public IActionResult Index()
         {
@@ -33,7 +37,7 @@ namespace _7Colors.Areas.Admin.Controllers
             {
                 context.SpecialTags.Add(tag);
                 await context.SaveChangesAsync();
-                TempData["Create"] = "لقد تم إضافة العلامة الخاصة";
+                toastNotification.Success("لقد تم إضافة العلامة الخاصة");
                 return RedirectToAction(nameof(Index));
             }
             return View(tag);
@@ -60,7 +64,7 @@ namespace _7Colors.Areas.Admin.Controllers
             {
                 context.SpecialTags.Update(tag);
                 await context.SaveChangesAsync();
-                TempData["Edit"] = "لقد تم تعديل العلامة الخاصة";
+                toastNotification.Success("لقد تم إضافة العلامة الخاصة");
                 return RedirectToAction(nameof(Index));
             }
             return View(tag);
@@ -116,7 +120,7 @@ namespace _7Colors.Areas.Admin.Controllers
             {
                 context.SpecialTags.Remove(tag);
                 await context.SaveChangesAsync();
-                TempData["Delete"] = "لقد تم حذف العلامة الخاصة";
+                toastNotification.Information("لقد تم حذف العلامة الخاصة");
                 return RedirectToAction(nameof(Index));
             }
             return View(tag);

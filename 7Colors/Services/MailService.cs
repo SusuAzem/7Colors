@@ -4,8 +4,6 @@ using MailKit.Net.Smtp;
 using Microsoft.Extensions.Options;
 using MimeKit;
 
-using Org.BouncyCastle.Asn1.Pkcs;
-
 using System.Globalization;
 
 
@@ -70,9 +68,17 @@ namespace _7Colors.Services
 
                 string filePath = webHost.WebRootPath + mailData.Body;
                 string emailTemplateText = File.ReadAllText(filePath);
-                emailTemplateText = string.Format(emailTemplateText,
-                    mailData.ToName,
-                    DateTime.Today.Date.ToString("dd / MMMM / yyyy", new CultureInfo("ar-SA")).ConvertNumerals());
+                if (filePath.Contains("NewOrder", StringComparison.OrdinalIgnoreCase))
+                {
+                    emailTemplateText = string.Format(emailTemplateText,  mailData.ToName, mailData.Order.Id,
+                    mailData.Order.OrderDate.Date.ToString("dd / MMMM / yyyy", new CultureInfo("ar-SA")).ConvertNumerals());
+                }
+                else
+                {
+                    emailTemplateText = string.Format(emailTemplateText,
+                   mailData.ToName,
+                   DateTime.Today.Date.ToString("dd / MMMM / yyyy", new CultureInfo("ar-SA")).ConvertNumerals());
+                }            
 
                 BodyBuilder emailBodyBuilder = new()
                 {
@@ -98,7 +104,7 @@ namespace _7Colors.Services
                 emailMessage.Subject = mailData.Subject;
                 emailMessage.Body = emailBodyBuilder.ToMessageBody();
 
-               SmtpClient mailClient = new();
+                SmtpClient mailClient = new();
                 await mailClient.ConnectAsync(_mailSettings.Host, _mailSettings.SMTPPort, _mailSettings.EnableSsl);
                 //await mailClient.ConnectAsync(_mailSettings.Host, _mailSettings.Port, MailKit.Security.SecureSocketOptions.StartTls);
                 await mailClient.AuthenticateAsync(_mailSettings.UserName, _mailSettings.Password);

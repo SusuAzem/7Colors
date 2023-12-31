@@ -1,4 +1,4 @@
-﻿@model _7Colors.Models.Post
+﻿@model _7Colors.ViewModels.PostViewModel
 
 @{
     ViewData["Title"] = "تفاصيل الموضوع";
@@ -42,7 +42,7 @@
                                     <li>
                                         <a asp-controller="Images" asp-action="Details" asp-route-id="@i.Id">
                                             @i.Title
-                                            <div><img src="@i.Url" /></div>
+                                            <div class="ShH"><img src="@i.Url" /></div>
                                         </a>
                                     </li>
                                 }

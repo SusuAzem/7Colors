@@ -27,6 +27,7 @@ namespace _7Colors.Data
         public DbSet<OrderHeader> OrderHeaders { get; set; }
         public DbSet<OrderItem> OrderItems { get; set; }
         public DbSet<DataProtectionKey> DataProtectionKeys { get; set; }
+        public DbSet<ShoppingCartLine> ShoppingCartLines { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -47,6 +48,7 @@ namespace _7Colors.Data
             modelBuilder.Entity<Post>(p => { 
                 p.HasMany(g => g.Images) .WithOne(i => i.Post)
                 .HasForeignKey(i => i.PostId).IsRequired();
+                p.HasData(new Post { Id = -1, Created = new(), Title = "بدون موضوع", Description = "نص"});
             });
 
 
@@ -81,14 +83,14 @@ namespace _7Colors.Data
             base.OnModelCreating(modelBuilder);
         }
     }
-    public class AppDbContextFactory : IDesignTimeDbContextFactory<AppDbContext>
-    {
-        public AppDbContext CreateDbContext(string[] args)
-        {
-            var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
-            optionsBuilder.UseSqlServer("Data Source=sql2022-001.adaptivewebhosting.com,1433;Initial Catalog=sevencol_db;User Id=7cadmin;Password=SqlS12345*;TrustServerCertificate=True;Trusted_Connection=true;encrypt=false;Integrated Security=false");
+    //public class AppDbContextFactory : IDesignTimeDbContextFactory<AppDbContext>
+    //{
+    //    public AppDbContext CreateDbContext(string[] args)
+    //    {
+    //        var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
+    //        optionsBuilder.UseSqlServer("Data Source=sql2022-001.adaptivewebhosting.com,1433;Initial Catalog=sevencol_Db;User Id=7cadmin;Password=SqlS12345*;TrustServerCertificate=True;Trusted_Connection=true;encrypt=false;Integrated Security=false");
 
-            return new AppDbContext(optionsBuilder.Options);
-        }
-    }
+    //        return new AppDbContext(optionsBuilder.Options);
+    //    }
+    //}
 }

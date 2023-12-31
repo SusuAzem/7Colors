@@ -1,17 +1,14 @@
 ﻿@using System.Collections.Specialized
 @using System.Text.Json
 @using _7Colors.Services
-@model IEnumerable<_7Colors.Models.Product>
+@model _7Colors.ViewModels.ProductListViewModel
 @{
     ViewData["Title"] = "المتجر الالكتروني";
 }
-<h1>مرحباً بكم في المتجر الالكتروني</h1>
+<h1>@ViewData["Title"]</h1>
 
 <section id="newDeals">
     <div class="container">
-        <div class="col-lg-12">
-            <h1 class="heading"> <span>كل المنتجات</span></h1>
-        </div>
         <div class="row newDeals ">
             <!-- Sidebar Widgets Column -->
             <div class="col-md-3 deals">
@@ -30,7 +27,7 @@
                             <div class="col-md-3 col-sm-6 col-lg-6">
                                 <input class="mybtn btn filter-btn mb-1" data-filter="كل الفئات" value="كل الفئات" />
                                                                     
-                                @foreach (ProductType item in ViewBag.Types)
+                                @foreach (ProductType item in Model.Types!)
                                 {
                                     <input class="mybtn btn filter-btn mb-1" data-filter="@item.Type" value=" @item.Type" />
                                 }

@@ -4,7 +4,6 @@
 
 <div class="d-flex" id="wrapper">
     <partial name="_Navbar" />
-    <!-- /#sidebar-wrapper -->
     <!-- Page Content -->
     <div id="page-content-wrapper">
         <div class="container-fluid">
@@ -58,19 +57,19 @@
                                                     <td style = "width:150px">
                                                         <div class="btn-group">
                                                             <a class="btn" title="تعيين المستخدم كمعلم"
-                                                                href="/Admin/Users/Upgrade?id='${data.id}' ">
+                                                                href="/Admin/Users/Upgrade/${data.id}">
                                                                 <i class="fa fa-arrow-up" ></i>
                                                             </a>
                                                             <a class="btn" title="تعيين المستخدم كطالب"
-                                                                        href="/Admin/Users/Downgrade?id='${data.id}' ">
+                                                                        href="/Admin/Users/Downgrade/${data.id}">
                                                                 <i class="fa fa-arrow-down"></i>
                                                             </a>
-                                                            <a href="/Admin/Users/LockUnlock?id='${data.id}' "
+                                                            <a href="/Admin/Users/LockUnlock/${data.id}"
                                                                     class="btn danger" title="تفعيل المستخدم">
                                                                 <i class="fa fa-unlock-alt"></i>
                                                             </a>
                                                             <a id="userDel" class= "btn danger" title="حذف المستخدم"
-                                                                        href="/Admin/Users/Block?id='${data.id}' ">
+                                                                        href="/Admin/Users/Block/${data.id}">
                                                                 <i class="fa fa-trash"></i>
                                                             </a>
                                                         </div>
@@ -82,19 +81,19 @@
                                                 <td style = "width:150px">
                                                     <div class="btn-group">
                                                         <a class="btn" title="تعيين المستخدم كمعلم"
-                                                            href="/Admin/Users/Upgrade?id='${data.id}' ">
+                                                            href="/Admin/Users/Upgrade/${data.id} ">
                                                             <i class="fa fa-arrow-up" ></i>
                                                         </a>
                                                         <a class="btn" title="تعيين المستخدم كطالب"
-                                                                    href="/Admin/Users/Downgrade?id='${data.id}' ">
+                                                                    href="/Admin/Users/Downgrade/${data.id}">
                                                             <i class="fa fa-arrow-down"></i>
                                                         </a>
                                                         <a class="btn danger" title="حجب المستخدم"
-                                                                href="/Admin/Users/LockUnlock?id='${data.id}' ">
+                                                                href="/Admin/Users/LockUnlock/${data.id} ">
                                                                 <i class="fa fa-lock"></i>
                                                         </a>
                                                         <a id="userDel" class= "btn danger" title="حذف المستخدم"
-                                                                    href="/Admin/Users/Block?id='${data.id}' ">
+                                                                    href="/Admin/Users/Block/${data.id} ">
                                                                     <i class="fa fa-trash"></i>
                                                         </a>
                                                     </div>
@@ -102,32 +101,10 @@
                                                     `;
                             }
 
-                        }, width: "25%"
+                        }, width: "40%"
                     }                 
                 ]
             })
-        })
-        $("#userData a#userDel").on("click", function () {
-                alert("تحذير : ستقوم بحذف المستخدم. لا تقم بهذا إلا في الحالات القصوى");
-                return false;
-            });
-        $(function () {
-            var upgrade = '@TempData["upgrade"]';
-            if (upgrade != "") {
-                alertify.success(upgrade);
-            }
-            var downgrade = '@TempData["downgrade"]';
-            if (downgrade != "") {
-                alertify.success(downgrade);
-            }
-            var block = '@TempData["block"]';
-            if (block != "") {
-                alertify.error(block);
-            }
-            var lock = '@TempData["lock"]';
-            if (lock != "") {
-                toastr.success(lock);
-            }
-        });
+        })     
     </script>
 }

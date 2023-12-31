@@ -1,6 +1,10 @@
 ﻿using _7Colors.Data.IRepository;
+using AspNetCoreHero.ToastNotification.Abstractions;
+
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+
+using NuGet.DependencyResolver;
 
 
 namespace _7Colors.Areas.Admin.Controllers
@@ -10,10 +14,12 @@ namespace _7Colors.Areas.Admin.Controllers
     public class UsersController : Controller
     {
         private readonly IUnitOfWork unitOfWork;
+        private readonly INotyfService toastNotification;
 
-        public UsersController(IUnitOfWork unitOfWork)
+        public UsersController(IUnitOfWork unitOfWork, INotyfService toastNotification)
         {
             this.unitOfWork = unitOfWork;
+            this.toastNotification = toastNotification;
         }
         public IActionResult Index()
         {
@@ -30,13 +36,13 @@ namespace _7Colors.Areas.Admin.Controllers
 
         public async Task<IActionResult> Upgrade(string id)
         {
-            var teacher = unitOfWork.User.GetFirstOrDefault(u => u.NameIdentifier == id);
-            if (teacher != null)
+            var u = unitOfWork.User.GetFirstOrDefault(u => u.NameIdentifier == id);
+            if (u != null)
             {
-                teacher.Role = "Teacher";
-                unitOfWork.User.Update(teacher);
+                u.Role = "Teacher";
+                unitOfWork.User.Update(u);
                 await unitOfWork.Save();
-                TempData["Upgrade"] = $"لقد تم تعيين المستخدم {teacher.Name} كمعلم";
+                toastNotification.Success($"لقد تم تعيين المستخدم {u.Name} كمعلم");
                 return RedirectToAction(nameof(Index));
             }
             return RedirectToAction(nameof(Index));
@@ -47,10 +53,10 @@ namespace _7Colors.Areas.Admin.Controllers
             var teacher = unitOfWork.User.GetFirstOrDefault(u => u.NameIdentifier == id);
             if (teacher != null)
             {
-                teacher.Role = "Student";
+                teacher.Role = "User";
                 unitOfWork.User.Update(teacher);
                 await unitOfWork.Save();
-                TempData["Downgrade"] = $"لقد تم التعيين المستخدم {teacher.Name} كطالب";
+                toastNotification.Success($"لقد تم تعيين المستخدم {teacher.Name} كطالب");
                 return RedirectToAction(nameof(Index));
             }
             return RedirectToAction(nameof(Index));
@@ -63,32 +69,35 @@ namespace _7Colors.Areas.Admin.Controllers
             {
                 unitOfWork.User.Remove(teacher);
                 await unitOfWork.Save();
-                TempData["Block"] = $"لقد تم حذف المستخدم {teacher.Name}";
+                toastNotification.Information($"لقد تم حذف المستخدم {teacher.Name}");
                 return RedirectToAction(nameof(Index));
             }
-            TempData["Block"] = "خطأ خلال عملية الحذف";
+            toastNotification.Error("خطأ خلال عملية الحذف");
             return RedirectToAction(nameof(Index));
         }
         public async Task<IActionResult> LockUnlock(string id)
         {
             var exuser = unitOfWork.User.GetFirstOrDefault(u => u.NameIdentifier == id);
+            string text;
             if (exuser == null)
             {
-                TempData["Lock"] = "خطأ خلال عملية الحجب";
+                toastNotification.Error("خطأ خلال عملية الحجب");
                 return RedirectToAction(nameof(Index));
             }
             if  (exuser.LockoutEnd > DateTime.Now)
             {
                 //user is currently locked, we will unlock them
                 exuser.LockoutEnd = DateTime.Now;
+                text ="لقد تم تفعيل المستخدم ";
             }
             else
             {
                 exuser.LockoutEnd = DateTime.Now.AddYears(1000);
+                text ="لقد تم حجب المستخدم ";
             }
             unitOfWork.User.Update(exuser);
             await unitOfWork.Save();
-            TempData["Lock"] = "تمت العملية بنجاح";
+            toastNotification.Success(text);
             return RedirectToAction(nameof(Index));
         }
     }

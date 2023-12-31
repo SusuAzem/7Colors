@@ -206,6 +206,15 @@ namespace _7Colors.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Posts");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = -1,
+                            Created = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "نص",
+                            Title = "بلا موضوع"
+                        });
                 });
 
             modelBuilder.Entity("_7Colors.Models.Product", b =>
@@ -298,7 +307,7 @@ namespace _7Colors.Migrations
 
                     b.HasIndex("UserNameIdentifier");
 
-                    b.ToTable("ShoppingCartLine");
+                    b.ToTable("ShoppingCartLines");
                 });
 
             modelBuilder.Entity("_7Colors.Models.SpecialTag", b =>

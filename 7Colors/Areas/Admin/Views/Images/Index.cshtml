@@ -1,4 +1,4 @@
-﻿@model IEnumerable<_7Colors.Models.Image>
+﻿@model IEnumerable<_7Colors.ViewModels.ImageViewModel>
 @{
     ViewData["Title"] = "قائمة صور الصفحة الرئيسية";
 }
@@ -18,14 +18,13 @@
             </div>
             <br />
             <div>
-                <table class="table table-striped border" id="myTable">
+                <table class="table table-responsive p-2 table-striped border" id="myTable">
                     <thead>
                         <tr class="table-info">
                             <th>@Html.DisplayNameFor(c => c.Title)</th>
-                            <th>@Html.DisplayNameFor(c => c.Description)</th>
+                            @*                             <th>@Html.DisplayNameFor(c => c.Description)</th>*@
                             <th>@Html.DisplayNameFor(c => c.Url)</th>
-                            <th>@Html.DisplayNameFor(c => c.PostId) </th>
-                            <th>@Html.DisplayNameFor(c => c.IsPublished)</th>
+                            @*                             <th>@Html.DisplayNameFor(c => c.PostId) </th>*@                            @*                             <th>@Html.DisplayNameFor(c => c.IsPublished)</th>*@
                             <th width="140px">خيارات</th>
                         </tr>
                     </thead>
@@ -34,13 +33,13 @@
                         {
                             <tr>
                                 <td>@item.Title</td>
-                                <td>@item.Description</td>
+                                @* <td>@item.Description</td>*@
                                 <td id="img" style="background-color: @((item.Url != null) ?
                                 "var(--bs-table-bg)" : "darksalmon")">
                                     <img src="@item.Url" />
                                 </td>
-                                <td>@item.Post?.Title</td>
-                                <td>@item.IsPublished.ConvertLogic()</td>
+                                @* <td>@item.Post?.Title</td>
+                                <td>@item.IsPublished.ConvertLogic()</td> *@
                                 <partial name="_Buttons" model="@item.Id" />
                             </tr>
                         }
@@ -54,20 +53,4 @@
 
 @section scripts {
     <script src="~/js/IndexTable.js"></script>
-    <script type="text/javascript">
-        $(function () {
-            var create = '@TempData["create"]'
-            if (create != '') {
-                alertify.success(create);
-            }
-            var edit = '@TempData["edit"]'
-            if (edit != '') {
-                alertify.success(edit);
-            }
-            var del = '@TempData["delete"]'
-            if (del != '') {
-                alertify.error(del);
-            }
-        })
-    </script>
 }

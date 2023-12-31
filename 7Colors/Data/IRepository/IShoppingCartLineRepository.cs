@@ -6,5 +6,6 @@ namespace _7Colors.Data.IRepository
     {
         int IncrementCount(ShoppingCartLine shoppingCart, int count);
         int DecrementCount(ShoppingCartLine shoppingCart, int count);
+        IEnumerable<ShoppingCartLine> GetList(string id);
     }
 }

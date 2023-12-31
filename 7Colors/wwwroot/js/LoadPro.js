@@ -48,8 +48,8 @@ const displayProducts = (products) => {
                                 <img class="card-img-top" src="${product.img}" alt="card image">
                             </div>
                             <div class="card-body">
-                                <h5>${product.name}</h5>
-                                <h6>${product.type}</h6>
+                                <h6>${product.name}</h6>
+                                <h7>${product.type}</h7>
                                 <h7 class="price">السعر: ${product.price} رس</h7>
                                 <a href="/ECommerce/Home/Detail/${product.id}" class = "btn">تفاصيل المنتج</a>                                
                             </div>

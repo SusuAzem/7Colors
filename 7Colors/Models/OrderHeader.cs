@@ -7,13 +7,6 @@ namespace _7Colors.Models
 {
     public class OrderHeader
     {
-
-        public OrderHeader(string userNameIdentifier)
-        {
-            UserNameIdentifier = userNameIdentifier;
-            OrderItems = new List<OrderItem>();
-        }
-
         public int Id { get; set; }
 
         [ForeignKey("User")]
@@ -44,17 +37,6 @@ namespace _7Colors.Models
 
         public string? PaymentIntentId { get; set; }
 
-        public virtual IEnumerable<OrderItem>? OrderItems { get; set; }
-
-        //public string? Name { get; set; }
-        //[Required]
-        //public string? PhoneNumber { get; set; }
-        //[Required]
-        //public string? StreetAddress { get; set; }
-        //[Required]
-        //public string? City { get; set; }
-        //[Required]
-        //public int PostalCode { get; set; }
-        //[Required]
+        public virtual IEnumerable<OrderItem>? OrderItems { get; set; } = new List<OrderItem>();
     }
 }

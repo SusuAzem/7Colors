@@ -1,4 +1,4 @@
-﻿@model _7Colors.Models.Image
+﻿@model _7Colors.ViewModels.ImageViewModel
 
 @{
     ViewData["Title"] = "حذف الصورة";
@@ -48,7 +48,7 @@
                             <label asp-for="IsPublished"></label>
                         </div>
                         <div class="col-8">
-                            <input asp-for="IsPublished" type="checkbox" disabled="disabled" />
+                            <input asp-for="IsPublished" type="checkbox" readonly />
                         </div>
                         <span asp-validation-for="IsPublished" class="text-danger"></span>
                     </div>

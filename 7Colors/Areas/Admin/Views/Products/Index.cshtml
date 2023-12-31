@@ -1,4 +1,5 @@
-﻿@model IEnumerable<_7Colors.Models.Product>
+﻿@using System.Globalization
+@model IEnumerable<_7Colors.ViewModels.ProductItemViewModel>
 
 @{
     ViewData["Title"] = "قائمة المنتجات";
@@ -18,33 +19,19 @@
                     <a asp-action="Create" class="btn"><i class="fa fa-plus"></i>&nbsp; إضافة</a>
                 </div>
             </div>
-           @*  <form method="post">
-                <div class="row">
-                    <div class="col-lg-3">
-                        <input type="number" class="form-control" name="lowAmount" placeholder="00.00" />
-                    </div>
-                    <div class="col-lg-3">
-                        <input type="number" class="form-control" name="largeAmount" placeholder="99.99 " />
-                    </div>
-                    <div class="col-lg-3">
-                        <input type="submit" class="btn" value="بحث" />
-                    </div>
-                     <div class="col-lg-3"></div> 
-                </div>
-            </form> *@
             <br />
             <div>
-                <table class="table table-striped border" id="myTable">
+                <table class="table table-responsive p-2 table-striped border" id="myTable">
                     <thead>
                         <tr class="table-info">
                             <th>@Html.DisplayNameFor(c => c.Name)</th>
                             <th>@Html.DisplayNameFor(c => c.Price)</th>
                             <th>@Html.DisplayNameFor(c=>c.Image)</th>
-                            <th>@Html.DisplayNameFor(c => c.ProductColor) </th>
+                            @* <th>@Html.DisplayNameFor(c => c.ProductColor) </th>
                             <th>@Html.DisplayNameFor(c => c.IsAvailable)</th>
                             <th>@Html.DisplayNameFor(c => c.IsPublished)</th>
                             <th>@Html.DisplayNameFor(c => c.TypeId)</th>
-                            <th>@Html.DisplayNameFor(c => c.TagId)</th>
+                            <th>@Html.DisplayNameFor(c => c.TagId)</th> *@
                             <th width="140px">خيارات</th>
                         </tr>
                     </thead>
@@ -53,16 +40,16 @@
                         {
                             <tr>
                                 <td>@item.Name</td>
-                                <td>@item.Price.ToString().ConvertNumerals() رس</td>
+                                <td>@item.Price.ToString("c", new CultureInfo("ar-SA")).ConvertNumerals() </td>
                                 <td id="img" style="background-color: @((item.Image!.Contains("noimage")) ? "darksalmon" : "var(--bs-table-bg)")">
                                     <img src="@item.Image" /></td>
-                                <td>@item.ProductColor</td>
+                              @*   <td>@item.ProductColor</td>
                                 <td style="background-color: @(item.IsAvailable? "var(--bs-table-bg)" : "darksalmon")">
                                     @item.IsAvailable.ConvertLogic()</td>
                                 <td style="background-color: @(item.IsPublished? "var(--bs-table-bg)" : "darksalmon")">
                                     @item.IsPublished.ConvertLogic()</td>
                                 <td>@item.ProductType?.Type</td>
-                                <td>@item.SpecialTag?.Name</td>
+                                <td>@item.SpecialTag?.Name</td> *@
                                 <partial name="_Buttons" model="@item.Id" />
                             </tr>
                         }
@@ -76,20 +63,4 @@
 
 @section scripts{
     <script src="~/js/indextable.js"></script>
-    <script>
-       $(function () {
-            var create = '@TempData["create"]';
-            if (create != "") {
-                alertify.success(create);
-            }
-            var edit = '@TempData["edit"]';
-            if (edit != "") {
-                alertify.success(edit);
-            }
-            var del = '@TempData["delete"]';
-            if (del != "") {
-                alertify.error(del);
-            }
-        });
-    </script>
 }

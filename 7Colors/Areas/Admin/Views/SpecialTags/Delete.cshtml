@@ -9,10 +9,6 @@
     <!-- /#sidebar-wrapper -->
     <!-- Page Content -->
     <div id="page-content-wrapper">
-       @*  <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
-            <button class="btn btn-primary" id="menu-toggle">Toggle Menu</button>
-            <a class="btn btn-warning float-right" asp-area="Admin" asp-controller="ProductTypes" asp-action="Create">Add-ProductTypes</a>
-        </nav> *@
         <div class="container-fluid">
             <h4 class="text-info">@ViewData["Title"] </h4>
             <form asp-action="Delete" method="post">
@@ -24,8 +20,8 @@
                             <label asp-for="Name"></label>
                         </div>
                         <div class="col-6">
-                            <label asp-for="Name" class="form-control" />
-                            @Model.Name
+                            <input asp-for="Name" class="form-control" readonly/>
+                           
                         </div>
                         <span asp-validation-for="Name" class="text-danger"></span>
                     </div>

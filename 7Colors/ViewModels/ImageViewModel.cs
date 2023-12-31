@@ -1,6 +1,7 @@
 ﻿using _7Colors.Models;
 
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -31,6 +32,11 @@ namespace _7Colors.ViewModels
         [Required(ErrorMessage = "حقل الموضوع مطلوب")]
         [Display(Name = "الموضوع")]
         public int PostId { get; set; }
+
+        [ValidateNever]
         public Post? Post { get; set; }
+
+        [ValidateNever]
+        public List<SelectListItem> Posts { get; set; }
     }
 }

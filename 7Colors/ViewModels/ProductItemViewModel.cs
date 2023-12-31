@@ -1,33 +1,16 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel;
+﻿using _7Colors.Models;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
-using Microsoft.AspNetCore.Mvc;
-using System.Diagnostics.Metrics;
-using System.Net;
-using _7Colors.Models;
+using System.ComponentModel.DataAnnotations;
 
 namespace _7Colors.ViewModels
 {
-    public class ProductItemViewModel
-    {
-        public ProductItemViewModel(Product p)
-        {
-            ProductType = p.ProductType;
-            ProductColor = p.ProductColor;
-            IsPublished = p.IsPublished;
-            Id = p.Id;
-            Name = p.Name;
-            Price = p.Price;
-            Image = p.Image;
-            IsAvailable = p.IsAvailable;
-            SpecialTag = p.SpecialTag;
-        }
+    public class ProductItemViewModel    
+    {        
         public int Id { get; set; }
 
         [Required(ErrorMessage ="حقل الاسم مطلوب")]
         [Display(Name = "الاسم")]
-        public string? Name { get; set; }
+        public string Name { get; set; }
 
         [Required(ErrorMessage = "حقل السعر مطلوب")] 
         [Display(Name = "السعر")]
@@ -35,11 +18,11 @@ namespace _7Colors.ViewModels
 
         [ValidateNever]
         [Display(Name = "الصورة")]
-        public string? Image { get; set; } = "";
+        public string? Image { get; set; } = "/images/noimage.PNG";
 
         [Required(ErrorMessage = "حقل اللون مطلوب")]
         [Display(Name = "اللون")]
-        public string? ProductColor { get; set; }
+        public string ProductColor { get; set; }
 
         [Required(ErrorMessage = "حقل توفر المنتج مطلوب")]
         [Display(Name = "متوفر؟")]
@@ -58,6 +41,6 @@ namespace _7Colors.ViewModels
         [Display(Name = "العلامة الخاصة")]
         public int TagId { get; set; }
         public SpecialTag? SpecialTag { get; set; }
-    
-}
+
+    }
 }

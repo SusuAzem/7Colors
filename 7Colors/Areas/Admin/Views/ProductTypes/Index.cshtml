@@ -20,7 +20,7 @@
             <br />
 
             <div>
-                <table class="table table-striped border">
+                <table class="table table-striped border table-responsive p-2">
                     <thead>
                         <tr class="table-info">
                             <th>
@@ -46,20 +46,4 @@
     </div>
 </div>
 @section scripts {
-    <script type="text/javascript">
-        $(function () {
-            var create = '@TempData["create"]'
-            if (create != '') {
-                alertify.success(create);
-            }
-            var edit = '@TempData["edit"]'
-            if (edit != '') {
-                alertify.success(edit);
-            }
-            var del = '@TempData["delete"]'
-            if (del != '') {
-                alertify.err(del);
-            }
-        })
-    </script>
-}
+  }

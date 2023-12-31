@@ -4,9 +4,13 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace _7Colors.ViewModels
 {
+
+    /// <summary>
+    /// For the product create & edit page
+    /// </summary>
     public class ProductViewModel
     {
-        public Product? Product { get; set; }
+        public ProductItemViewModel? Product { get; set; }
 
         [ValidateNever]
         public IEnumerable<SelectListItem>? ProductTypeList { get; set; }

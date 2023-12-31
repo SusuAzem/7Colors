@@ -25,14 +25,14 @@ namespace _7Colors.Areas.Admin.Controllers
         {
             return View();
         }
-
-        public IActionResult Details(int id)
+        [HttpGet]
+        public IActionResult Details(int orderId)
         {
             OrderVM = new OrderViewModel()
             {
-                OrderHeader = _unitOfWork.OrderHeader.GetFirstOrDefault(u => u.Id == id,
+                OrderHeader = _unitOfWork.OrderHeader.GetFirstOrDefault(u => u.Id == orderId,
                               includeProperties: "User"),
-                OrderItems = _unitOfWork.OrderItem.GetAll(o => o.OrderHeaderId == id,
+                OrderItems = _unitOfWork.OrderItem.GetAll(o => o.OrderHeaderId == orderId,
                             includeProperties: "Product")
             };
             return View(OrderVM);
@@ -43,8 +43,8 @@ namespace _7Colors.Areas.Admin.Controllers
         [HttpGet]
         public IActionResult GetAll(string status)
         {
-            IEnumerable<OrderHeader> orderHeaders;
-            orderHeaders = _unitOfWork.OrderHeader.GetAll(includeProperties: "User");
+            var orderHeaders = _unitOfWork.OrderHeader.GetAll(includeProperties: "User");
+                
             //else
             //{
             //    var claim = User.Identities.FirstOrDefault()!.FindFirst(ClaimTypes.NameIdentifier);
@@ -53,7 +53,7 @@ namespace _7Colors.Areas.Admin.Controllers
             switch (status)
             {
                 case "pending":
-                    orderHeaders = orderHeaders.Where(u => u.PaymentStatus == StringDefault.PaymentStatusDelayedPayment);
+                    orderHeaders = orderHeaders.Where(u => u.PaymentStatus == StringDefault.PaymentStatusPending);
                     break;
                 case "inprocess":
                     orderHeaders = orderHeaders.Where(u => u.OrderStatus == StringDefault.StatusInProcess);
@@ -67,8 +67,17 @@ namespace _7Colors.Areas.Admin.Controllers
                 default:
                     break;
             }
-            return Json(new { data = orderHeaders });
+            var list = orderHeaders.Select(o => new
+            {
+                id = o.Id,
+                name = o.User!.Name,                
+                orderStatus = o.OrderStatus,
+                orderTotal = o.OrderTotal
+            }).ToList();
+            return Json(new { data = list });
         }
+
+
         #endregion
     }
 }

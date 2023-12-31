@@ -2,31 +2,12 @@
   "iisSettings": {
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
-    "iis": {
-      "applicationUrl": "https://7sevencolors.com",
-      "sslPort": 0
+    "iisExpress": {
+      "applicationUrl": "http://localhost:59466",
+      "sslPort": 44380
     }
   },
   "profiles": {
-    "http": {
-      "commandName": "Project",
-      "dotnetRunMessages": true,
-      "launchBrowser": true,
-      "applicationUrl": "http://7sevencolors.com",
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
-      }
-    },
-    "https": {
-      "commandName": "Project",
-      "dotnetRunMessages": true,
-      "launchBrowser": true,
-      //"applicationUrl": "https://localhost:7264;http://localhost:5089",
-      "applicationUrl": "https://7sevencolors.com",
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
-      }
-    },
     "IIS Express": {
       "commandName": "IISExpress",
       "launchBrowser": true,
@@ -34,13 +15,15 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "IIS": {
-      "commandName": "IIS",
+    "https": {
+      "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "https://7sevencolors.com",
+      "applicationUrl": "https://localhost:5001;http://localhost:5000",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
-    }
+    }  
   }
-} 
+}
+ 
+  

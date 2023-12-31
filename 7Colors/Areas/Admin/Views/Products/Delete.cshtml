@@ -1,4 +1,4 @@
-﻿@model _7Colors.Models.Product
+﻿@model _7Colors.ViewModels.ProductItemViewModel
 @{
     ViewData["Title"] = "حذف المنتج";
 }
@@ -11,7 +11,7 @@
         <div class="container-fluid">
             <h4 class="text-info">@ViewData["Title"]</h4>
             <div class="row">
-                <form asp-action="Delete" method="post" enctype="multipart/form-data" class="col-6" asp-route-id="@Model.Id">
+                <form asp-action="Delete" method="post" enctype="multipart/form-data" class="col-8" asp-route-id="@Model.Id">
                     <div class="p-4 rounded border row">
                         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                         <input type="hidden" asp-for="Id" />
@@ -20,7 +20,7 @@
                                 <label asp-for="Name"></label>
                             </div>
                             <div class="col-8">
-                                <input asp-for="Name" class="form-control" readonly/>
+                                <input asp-for="Name" class="form-control" readonly />
                             </div>
                             <span asp-validation-for="Name" class="text-danger"></span>
                         </div>
@@ -39,7 +39,7 @@
                                 <label asp-for="ProductColor"></label>
                             </div>
                             <div class="col-8">
-                                <input asp-for="ProductColor" class="form-control" readonly/>
+                                <input asp-for="ProductColor" class="form-control" readonly />
                             </div>
                             <span asp-validation-for="ProductColor" class="text-danger"></span>
                         </div>
@@ -57,7 +57,7 @@
                                 <label asp-for="TagId"></label>
                             </div>
                             <div class="col-8">
-                                <input asp-for="SpecialTag!.Name" class="form-control" readonly /> 
+                                <input asp-for="SpecialTag!.Name" class="form-control" readonly />
                             </div>
                             <span asp-validation-for="TagId" class="text-danger"></span>
                         </div>
@@ -66,7 +66,7 @@
                                 <label asp-for="IsAvailable"></label>
                             </div>
                             <div class="col-8">
-                                <input asp-for="IsAvailable" disabled="disabled" type="checkbox" />
+                                <input asp-for="IsAvailable" readonly type="checkbox" />
                             </div>
                             <span asp-validation-for="IsAvailable" class="text-danger"></span>
                         </div>
@@ -75,7 +75,7 @@
                                 <label asp-for="IsPublished"></label>
                             </div>
                             <div class="col-8">
-                                <input asp-for="IsPublished" type="checkbox" disabled="disabled" />
+                                <input asp-for="IsPublished" type="checkbox" readonly />
                             </div>
                             <span asp-validation-for="IsPublished" class="text-danger"></span>
                         </div>
@@ -87,11 +87,9 @@
                         </div>
                     </div>
                 </form>
-                <div id="proImg" class="col-6">
+                <div id="proImg" class="col-4">
                     <div class="form-group">
-                        <div class="col-6">
-                            <img src="@Model.Image" class="card-img" id="Detail" />
-                        </div>
+                        <img src="@Model.Image" class="card-img" id="Detail" />
                     </div>
                 </div>
             </div>

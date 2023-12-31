@@ -1,4 +1,4 @@
-﻿@model _7Colors.Models.Product
+﻿@model _7Colors.ViewModels.ProductViewModel
 
 @{
     ViewData["Title"] = "تعديل المنتج ";
@@ -15,78 +15,78 @@
                 <div class="p-4 rounded border row">
                     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                     <h4>@ViewBag.message</h4>
-                    <input type="hidden" asp-for="Id" />
+                    <input type="hidden" asp-for="Product!.Id" />
                     <div class="form-group row">
                         <div class="col-3">
-                            <label asp-for="Name"></label>
+                            <label asp-for="Product!.Name"></label>
                         </div>
                         <div class="col-8">
-                            <input asp-for="Name" class="form-control" />
+                            <input asp-for="Product!.Name" class="form-control" />
                         </div>
-                        <span asp-validation-for="Name" class="text-danger"></span>
+                        <span asp-validation-for="Product!.Name" class="text-danger"></span>
                     </div>
                     <div class="form-group row">
                         <div class="col-3">
-                            <label asp-for="Price"></label>
+                            <label asp-for="Product!.Price"></label>
                         </div>
                         <div class="col-8">
-                            <input asp-for="Price" class="form-control" />
+                            <input asp-for="Product!.Price" class="form-control" />
                         </div>
-                        <span asp-validation-for="Price" class="text-danger"></span>
+                        <span asp-validation-for="Product!.Price" class="text-danger"></span>
                     </div>
                     <div class="form-group row">
                         <div class="col-3">
-                            <label asp-for="Image"></label>
+                            <label asp-for="Product!.Image"></label>
                         </div>
                         <div class="col-8">
-                            <input asp-for="Image" class="form-control" type="file"/>
+                            <input asp-for="Product!.Image" class="form-control" type="file" />
                         </div>
-                        <span asp-validation-for="Image" class="text-danger"></span>
+                        <span asp-validation-for="Product!.Image" class="text-danger"></span>
                     </div>
                     <div class="form-group row">
                         <div class="col-3">
-                            <label asp-for="ProductColor"></label>
+                            <label asp-for="Product!.ProductColor"></label>
                         </div>
                         <div class="col-8">
-                            <input asp-for="ProductColor" class="form-control" />
+                            <input asp-for="Product!.ProductColor" class="form-control" />
                         </div>
-                        <span asp-validation-for="ProductColor" class="text-danger"></span>
+                        <span asp-validation-for="Product!.ProductColor" class="text-danger"></span>
                     </div>
                     <div class="form-group row">
                         <div class="col-3">
-                            <label asp-for="TypeId"></label>
+                            <label asp-for="Product!.TypeId"></label>
                         </div>
                         <div class="col-8">
-                            <select asp-for="TypeId" asp-items="ViewBag.TypeId" class="form-control"><option disabled selected>--اختر نوع المنتج--</option></select>
+                            <select asp-for="Product!.TypeId" asp-items="@Model.ProductTypeList" class="form-control"><option disabled selected>--اختر نوع المنتج--</option></select>
                         </div>
-                        <span asp-validation-for="TypeId" class="text-danger"></span>
+                        <span asp-validation-for="Product!.TypeId" class="text-danger"></span>
                     </div>
                     <div class="form-group row">
                         <div class="col-3">
-                            <label asp-for="TagId"></label>
+                            <label asp-for="Product!.TagId"></label>
                         </div>
                         <div class="col-8">
-                            <select asp-for="TagId" asp-items="@ViewBag.TagId" class="form-control"><option disabled selected>--اختر العلامة الخاصة--</option></select>
+                            <select asp-for="Product!.TagId" asp-items="@ViewBag.TagId" class="form-control"><option disabled selected>--اختر العلامة الخاصة--</option></select>
                         </div>
-                        <span asp-validation-for="TagId" class="text-danger"></span>
+                        <span asp-validation-for="Product!.TagId" class="text-danger"></span>
                     </div>
                     <div class="form-group row">
                         <div class="col-3">
-                            <label asp-for="IsAvailable"></label>
+                            <label asp-for="Product!.IsAvailable"></label>
                         </div>
                         <div class="col-8">
-                            <input asp-for="IsAvailable" type="checkbox"/>
+                            <input asp-for="Product!.IsAvailable" type="checkbox" />
                         </div>
-                        <span asp-validation-for="IsAvailable" class="text-danger"></span>
+                        <span asp-validation-for="Product!.IsAvailable" class="text-danger"></span>
                     </div>
                     <div class="form-group row">
                         <div class="col-3">
-                            <label asp-for="IsPublished"></label>
+                            <label asp-for="Product!.IsPublished"></label>
                         </div>
                         <div class="col-8">
-                            <input asp-for="IsPublished" type="checkbox" />
+                            <input asp-for="Product!.IsPublished" type="checkbox" />
                         </div>
-                        <span asp-validation-for="IsPublished" class="text-danger"></span>
+                        <span asp-validation-for="Product!.IsPublished" class="text-danger"></span>
                     </div>
                     <br />
                     <br />

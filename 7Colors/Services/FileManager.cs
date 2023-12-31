@@ -2,7 +2,7 @@
 {
     public class FileManager : IFileManager
     {
-        private string? _imagePath;
+        private readonly string? _imagePath;
         public FileManager(IConfiguration config)
         {
             _imagePath = config["Path:Images"];
@@ -21,8 +21,8 @@
                 {
                     Directory.CreateDirectory(save_path);
                 }
-                var mine = image.FileName.Substring(image.FileName.LastIndexOf('.'));
-                var fileName = $"img_{DateTime.Now.ToString("dd-MM-yyyy-HH-mm-ss")}{mine}";
+                var mine = image.FileName[image.FileName.LastIndexOf('.')..];
+                var fileName = $"img_{DateTime.Now:dd-MM-yyyy-HH-mm-ss}{mine}";
 
                 using (var filestream = new FileStream(Path.Combine(save_path, fileName), FileMode.Create))
                 {

@@ -1,4 +1,4 @@
-﻿@model _7Colors.Models.Image
+﻿@model _7Colors.ViewModels.ImageViewModel
 
 @{
     ViewData["Title"] = "تعديل الصورة";
@@ -48,7 +48,7 @@
                             <label asp-for="PostId"></label>
                         </div>
                         <div class="col-8">
-                            <select asp-for="PostId" asp-items="ViewBag.PostId" class="form-control"></select>
+                            <select asp-for="PostId" asp-items="@Model.Posts" class="form-control"></select>
                         </div>
                         <span asp-validation-for="PostId" class="text-danger"></span>
                     </div>

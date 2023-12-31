@@ -1,65 +1,87 @@
-﻿using _7Colors.Data;
-using _7Colors.Data.IRepository;
-using _7Colors.Data.Repository;
+﻿using _7Colors.Data.IRepository;
 using _7Colors.Models;
+using _7Colors.ViewModels;
+
+using AspNetCoreHero.ToastNotification.Abstractions;
+
+using AutoMapper;
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting;
 
 namespace _7Colors.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    [Authorize(Policy ="Admin")]
+    [Authorize(Policy = "Admin")]
     public class ImagesController : Controller
     {
         private readonly IUnitOfWork unitOfWork;
         private readonly IWebHostEnvironment webHost;
+        private readonly IMapper mapper;
+        private readonly INotyfService toastNotification;
 
-        public ImagesController(IUnitOfWork unitOfWork, IWebHostEnvironment webHost)
+        public ImagesController(IUnitOfWork unitOfWork, IWebHostEnvironment webHost
+            ,IMapper mapper, INotyfService toastNotification)
         {
             this.unitOfWork = unitOfWork;
             this.webHost = webHost;
+            this.mapper = mapper;
+            this.toastNotification = toastNotification;
         }
 
         public IActionResult Index(int? id = null)
         {
+            List<Image> list;
             if (id == null)
             {
-                return View(unitOfWork.Image.GetAll(null ,"Post"));
+                list = unitOfWork.Image.GetAll(null, "Post").ToList();
             }
             else
             {
-                return View(unitOfWork.Image.GetAll(i=>i.PostId == id, "Post"));
+                list = unitOfWork.Image.GetAll(i => i.PostId == id, "Post").ToList();
             }
+            List<ImageViewModel> listViewModel = new();
+            foreach (var item in list)
+            {
+                var i = mapper.Map<ImageViewModel>(item);                 
+                listViewModel.Add(i);
+            }
+            return View(listViewModel);
         }
 
 
         [HttpGet]
         public IActionResult Create()
         {
-            ViewData["PostId"] = new SelectList(unitOfWork.Post.GetAll(), "Id", "Title");
-            return View();
+            var vm = new ImageViewModel
+            {
+                Posts = new SelectList(unitOfWork.Post.GetAll(), "Id", "Title").ToList(),
+            };
+            //vm.Posts.Insert(0, new SelectListItem("بدون موضوع", "-1"));
+            return View(vm);
         }
-
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Image img, [FromForm] IFormFile Url)
+        public async Task<IActionResult> Create(ImageViewModel img, [FromForm] IFormFile Url)
         {
             var existedImg = unitOfWork.Image.GetFirstOrDefault(i => i.Title == img.Title & i.PostId == img.PostId);
             if (existedImg != null)
             {
                 ViewBag.message = "هذه الصورة موجودة مسبقاً";
-                ViewData["PostId"] = new SelectList(unitOfWork.Post.GetAll(), "Id", "Title");
+                img.Posts = new SelectList(unitOfWork.Post.GetAll(), "Id", "Title").ToList();
+                //img.Posts.Insert(0, new SelectListItem("بدون موضوع", "-1"));
                 return View(img);
             }
             if (Url != null)
             {
-                var name = Path.Combine(webHost.WebRootPath + "/images/posts/", Path.GetFileName(Url.FileName));
+                var ex = Url.FileName[Url.FileName.LastIndexOf('.')..];
+                var fileName = $"img_{DateTime.Now:dd-MM-yy-HH-mm-ss}{ex}";
+                var name = Path.Combine(webHost.WebRootPath + "/images/posts/", fileName);
                 await Url.CopyToAsync(new FileStream(name, FileMode.Create));
-                img.Url = "/images/posts/" + Url.FileName;
+                img.Url = "/images/posts/" + fileName;
             }
             if (Url == null)
             {
@@ -67,20 +89,22 @@ namespace _7Colors.Areas.Admin.Controllers
             }
             if (ModelState.IsValid)
             {
-                unitOfWork.Image.Add(img);
+                var i = mapper.Map<Image>(img);              
+                unitOfWork.Image.Add(i);
                 await unitOfWork.Save();
-                TempData["Create"] = "لقد تم إضافة الصورة";
+                toastNotification.Success("لقد تم إضافة الصورة");
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["PostId"] = new SelectList(unitOfWork.Post.GetAll(), "Id", "Title");
+            img.Posts = new SelectList(unitOfWork.Post.GetAll(), "Id", "Title").ToList();
+            //img.Posts.Insert(0, new SelectListItem("بدون موضوع", "-1"));
+
             return View(img);
         }
 
 
         [HttpGet]
         public IActionResult Edit(int? id)
-        {
-            ViewData["PostId"] = new SelectList(unitOfWork.Post.GetAll(), "Id", "Title");
+        {                                                 
             if (id == null)
             {
                 return NotFound();
@@ -90,27 +114,35 @@ namespace _7Colors.Areas.Admin.Controllers
             {
                 return NotFound();
             }
-            return View(img);
+            var i = mapper.Map<ImageViewModel>(img);
+            i.Posts = new SelectList(unitOfWork.Post.GetAll(), "Id", "Title").ToList();
+            //i.Posts.Insert(0, new SelectListItem("بدون موضوع", "-1"));
+            return View(i);
         }
 
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Image img, IFormFile Url)
+        public async Task<IActionResult> Edit(ImageViewModel img, IFormFile Url)
         {
             if (Url != null)
             {
-                var name = Path.Combine(webHost.WebRootPath + "/images/posts/", Path.GetFileName(Url.FileName));
+                var ex = Url.FileName[Url.FileName.LastIndexOf('.')..];
+                var fileName = $"img_{DateTime.Now:dd-MM-yy-HH-mm-ss}{ex}";
+                var name = Path.Combine(webHost.WebRootPath + "/images/posts/", fileName);
                 await Url.CopyToAsync(new FileStream(name, FileMode.Create));
-                img.Url = "/images/posts/" + Url.FileName;
+                img.Url = "/images/posts/" + fileName;
             }
             if (ModelState.IsValid)
             {
-                unitOfWork.Image.Update(img);
+                var i = mapper.Map<Image>(img);
+                unitOfWork.Image.Update(i);
                 await unitOfWork.Save();
-                TempData["Edit"] = "لقد تم تعديل الصورة";
+                toastNotification.Success("لقد تم تعديل الصورة");
                 return RedirectToAction(nameof(Index));
             }
+            img.Posts = new SelectList(unitOfWork.Post.GetAll(), "Id", "Title").ToList();
+            //img.Posts.Insert(0, new SelectListItem("بدون موضوع", "-1"));
             return View(img);
         }
 
@@ -126,7 +158,8 @@ namespace _7Colors.Areas.Admin.Controllers
             {
                 return NotFound();
             }
-            return View(img);
+            var i = mapper.Map<ImageViewModel>(img);
+            return View(i);
         }
 
         [HttpGet]
@@ -141,12 +174,13 @@ namespace _7Colors.Areas.Admin.Controllers
             {
                 return NotFound();
             }
-            return View(img);
+            var i = mapper.Map<ImageViewModel>(img);
+            return View(i);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteAsync(int? id, Image img)
+        public async Task<IActionResult> Delete(int? id, ImageViewModel img)
         {
             if (id == null)
             {
@@ -165,13 +199,10 @@ namespace _7Colors.Areas.Admin.Controllers
             {
                 unitOfWork.Image.Remove(p);
                 await unitOfWork.Save();
-                TempData["Delete"] = "لقد تم حذف الصورة";
+                toastNotification.Information("لقد تم حذف الصورة");
                 return RedirectToAction(nameof(Index));
             }
-            return View(p);
-        }
-        #region MyRegion
-
-        #endregion
+            return View(img);
+        }    
     }
 }

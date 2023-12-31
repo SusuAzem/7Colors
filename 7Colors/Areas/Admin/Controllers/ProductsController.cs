@@ -1,14 +1,11 @@
-﻿using _7Colors.Data;
-using _7Colors.Data.IRepository;
-using _7Colors.Data.Repository;
+﻿using _7Colors.Data.IRepository;
 using _7Colors.Models;
 using _7Colors.ViewModels;
-
+using AspNetCoreHero.ToastNotification.Abstractions;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Hosting;
 
 namespace _7Colors.Areas.Admin.Controllers
 {
@@ -17,97 +14,120 @@ namespace _7Colors.Areas.Admin.Controllers
     public class ProductsController : Controller
     {
         private readonly IUnitOfWork unitOfWork;
-        private readonly IWebHostEnvironment webHost;     
-        
-        public ProductsController(IUnitOfWork unitOfWork, IWebHostEnvironment hostEnvironment)
+        private readonly IWebHostEnvironment webHost;
+        private readonly IMapper mapper;
+        private readonly INotyfService toastNotification;
+
+        public ProductsController(IUnitOfWork unitOfWork, IWebHostEnvironment hostEnvironment,
+            IMapper mapper, INotyfService toastNotification)
         {
             this.unitOfWork = unitOfWork;
             webHost = hostEnvironment;
+            this.mapper = mapper;
+            this.toastNotification = toastNotification;
         }
         public IActionResult Index()
         {
-            var product = unitOfWork.Product.GetAll(includeProperties: "ProductType,SpecialTag");
-            return View(product);           
+            var products = unitOfWork.Product.GetAll(includeProperties: "ProductType,SpecialTag");
+            List<ProductItemViewModel> list = new();
+            foreach (var item in products)
+            {
+                list.Add(mapper.Map<ProductItemViewModel>(item));
+            }
+            return View(list);
         }
         [HttpGet]
         public IActionResult Create()
         {
-            ViewData["TypeId"] = new SelectList(unitOfWork.ProductType.GetAll(), "Id", "Type");
-            ViewData["TagId"] = new SelectList(unitOfWork.SpecialTag.GetAll(), "Id", "Name");
-            return View();
+            var product = new ProductViewModel()
+            {
+                Product = new ProductItemViewModel(),
+                ProductTypeList = new SelectList(unitOfWork.ProductType.GetAll(), "Id", "Type"),
+                SpecialTagList = new SelectList(unitOfWork.SpecialTag.GetAll(), "Id", "Name")
+            };
+            return View(product);
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateAsync(Product pro, IFormFile Image)
+        public async Task<IActionResult> Create(ProductViewModel pro, [FromForm(Name = "Product.Image")] IFormFile Image)
         {
-            var types  = new SelectList(unitOfWork.ProductType.GetAll(), "Id", "Type");
+            var types = new SelectList(unitOfWork.ProductType.GetAll(), "Id", "Type");
             var tags = new SelectList(unitOfWork.SpecialTag.GetAll(), "Id", "Name");
-            var existedPro = unitOfWork.Product.GetFirstOrDefault(c => c.Name == pro.Name & c.Price == pro.Price);
+            var existedPro = unitOfWork.Product.GetFirstOrDefault(c => c.Name == pro.Product!.Name & c.Price == pro.Product!.Price);
             if (existedPro != null)
             {
                 ViewBag.message = "هذا المنتج موجود مسبقاً";
-                ViewData["TypeId"] = types;
-                ViewData["TagId"] = tags;
+                pro.ProductTypeList = types;
+                pro.SpecialTagList = tags;
                 return View(pro);
             }
             if (Image != null)
             {
-                var name = Path.Combine(webHost.WebRootPath + "/images/products/", Path.GetFileName(Image.FileName));
-                Image.CopyTo(new FileStream(name, FileMode.Create));
-                pro.Image = "/images/products/" + Image.FileName;
+                var ex = Image.FileName[Image.FileName.LastIndexOf('.')..];
+                var fileName = $"img_{DateTime.Now:dd-MM-yy-HH-mm-ss}{ex}";
+                var name = Path.Combine(webHost.WebRootPath + "/images/products/", fileName);
+                await Image.CopyToAsync(new FileStream(name, FileMode.Create));
+                pro.Product!.Image = "/images/products/" + fileName;
             }
             if (Image == null)
             {
-                pro.Image = "/images/noimage.PNG";
+                pro.Product!.Image = "/images/noimage.PNG";
             }
             if (ModelState.IsValid)
             {
-                unitOfWork.Product.Add(pro);
+                var p = mapper.Map<Product>(pro.Product);
+                unitOfWork.Product.Add(p);
                 await unitOfWork.Save();
-                TempData["Create"] = "لقد تم إضافة المنتج";
+                toastNotification.Success("لقد تم إضافة المنتج");
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["TypeId"] = types;
-            ViewData["TagId"] = tags;
+            pro.ProductTypeList = types;
+            pro.SpecialTagList = tags;
             return View(pro);
         }
-
 
         [HttpGet]
         public IActionResult Edit(int? id)
         {
-            ViewData["TypeId"] = new SelectList(unitOfWork.ProductType.GetAll(), "Id", "Type");
-            ViewData["TagId"] = new SelectList(unitOfWork.SpecialTag.GetAll(), "Id", "Name");
             if (id == null)
             {
                 return NotFound();
             }
-            var pro = unitOfWork.Product.GetFirstOrDefault(c => c.Id == id , "ProductType, SpecialTag");
+            var pro = unitOfWork.Product.GetFirstOrDefault(c => c.Id == id, "ProductType,SpecialTag");
             if (pro == null)
             {
                 return NotFound();
             }
-            return View(pro);
+            var vm = new ProductViewModel()
+            {
+                Product = mapper.Map<ProductItemViewModel>(pro),
+                ProductTypeList = new SelectList(unitOfWork.ProductType.GetAll(), "Id", "Type"),
+                SpecialTagList = new SelectList(unitOfWork.SpecialTag.GetAll(), "Id", "Name")
+            };
+            return View(vm);
         }
 
 
         [HttpPost]
-        [ValidateAntiForgeryToken]       
-        public async Task<IActionResult> Edit(Product pro, IFormFile Image)
-        {          
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(ProductViewModel pro, [FromForm(Name = "Product.Image")] IFormFile Image)
+        {
             if (Image != null)
             {
-                var name = Path.Combine(webHost.WebRootPath + "/images/products/", Path.GetFileName(Image.FileName));
+                var ex = Image.FileName[Image.FileName.LastIndexOf('.')..];
+                var fileName = $"img_{DateTime.Now:dd-MM-yy-HH-mm-ss}{ex}";
+                var name = Path.Combine(webHost.WebRootPath + "/images/products/", fileName);
                 await Image.CopyToAsync(new FileStream(name, FileMode.Create));
-                pro.Image = "/images/products/" + Image.FileName;              
+                pro.Product!.Image = "/images/products/" + fileName;
             }
             if (Image == null)
             {
-                pro.Image = "/images/noimage.PNG";
+                pro.Product!.Image = "/images/noimage.PNG";
             }
             if (ModelState.IsValid)
             {
-                unitOfWork.Product.Update(pro);
+                var p = mapper.Map<Product>(pro.Product);
+                unitOfWork.Product.Update(p);
                 await unitOfWork.Save();
                 TempData["Edit"] = "لقد تم تعديل المنتج";
                 return RedirectToAction(nameof(Index));
@@ -121,12 +141,12 @@ namespace _7Colors.Areas.Admin.Controllers
             {
                 return NotFound();
             }
-            var pro = unitOfWork.Product.GetFirstOrDefault(c => c.Id == id, "ProductType, SpecialTag");
+            var pro = unitOfWork.Product.GetFirstOrDefault(c => c.Id == id, "ProductType,SpecialTag");
             if (pro == null)
             {
                 return NotFound();
             }
-            return View(pro);
+            return View(mapper.Map<ProductItemViewModel>(pro));
         }
 
         [HttpGet]
@@ -136,16 +156,16 @@ namespace _7Colors.Areas.Admin.Controllers
             {
                 return NotFound();
             }
-            var pro = unitOfWork.Product.GetFirstOrDefault(c => c.Id == id, "ProductType, SpecialTag");
+            var pro = unitOfWork.Product.GetFirstOrDefault(c => c.Id == id, "ProductType,SpecialTag");
             if (pro == null)
             {
                 return NotFound();
             }
-            return View(pro);
+            return View(mapper.Map<ProductItemViewModel>(pro));
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteAsync(int? id, Product pro)
+        public async Task<IActionResult> Delete(int? id, ProductItemViewModel pro)
         {
             if (id == null)
             {
@@ -164,10 +184,10 @@ namespace _7Colors.Areas.Admin.Controllers
             {
                 unitOfWork.Product.Remove(p);
                 await unitOfWork.Save();
-                TempData["Delete"] = "لقد تم حذف المنتج";
+                toastNotification.Information("لقد تم حذف المنتج");
                 return RedirectToAction(nameof(Index));
             }
-            return View(p);
+            return View(pro);
         }
 
         #region API CALLS
@@ -176,31 +196,7 @@ namespace _7Colors.Areas.Admin.Controllers
         {
             var productList = unitOfWork.Product.GetAll(includeProperties: "ProductType,SpecialTag");
             return Json(new { data = productList });
-        }
-
-        //POST
-        //[HttpDelete]
-        //public IActionResult Delete(int? id)
-        //{
-        //    var obj = unitOfWork.Product.GetFirstOrDefault(u => u.Id == id);
-        //    if (obj == null)
-        //    {
-        //        return Json(new { success = false, message = "خطأ في عملية الحذف" });
-        //    }
-
-        //    var oldImagePath = Path.Combine(hostEnvironment.WebRootPath, obj.Image!.TrimStart('\\'));
-        //    if (System.IO.File.Exists(oldImagePath))
-        //    {
-        //        System.IO.File.Delete(oldImagePath);
-        //    }
-
-        //    unitOfWork.Product.Remove(obj);
-        //    await unitOfWork.Save();
-        //    return Json(new { success = true, message = "تم الحذف بنجاح" });
-
-        //}
-
-
+        }      
         #endregion
     }
 }

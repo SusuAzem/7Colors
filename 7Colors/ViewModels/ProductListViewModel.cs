@@ -9,6 +9,10 @@ using _7Colors.Models;
 
 namespace _7Colors.ViewModels
 {
+
+    /// <summary>
+    /// For the ECommerce index page
+    /// </summary>
     public class ProductListViewModel
     {
         public IEnumerable<Product>? Products { get; set; }

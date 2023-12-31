@@ -13,7 +13,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .multicolortext {
-    background-image: -webkit-gradient( linear, left bottom, left top, color-stop(0.1, rgb(0, 0, 255)), color-stop(0.5, rgb(255,215,0)), color-stop(0.9, rgb(127,0,255)) );
+    background-image: -webkit-gradient( linear, left bottom, left top, color-stop(0.1, rgb(0, 100, 200)), color-stop(0.5, rgb(255,215,0)), color-stop(0.9, rgb(127,0,255)) );
     -webkit-background-clip: text;
     -moz-background-clip: text;
     background-clip: text;
@@ -30,16 +30,19 @@ h1, h2, h3, h4, h5, h6 {
 .stacked {
     padding-top: 5px;
     height: 60px;
-    width: 100%;
+    /*    width: 50%;*/
     text-align: center;
     color: white;
     -webkit-text-stroke: 1px #F8F8F8;
     text-shadow: 0px 1px 4px #23430C;
     background-image: linear-gradient( 217deg, rgb(229, 85, 76), rgba(255, 0, 0, 0) 70.71% ), linear-gradient(127deg, rgb(121, 193, 73), rgba(0, 255, 0, 0) 70.71%), linear-gradient(336deg, rgb(58, 171, 225), rgba(0, 0, 255, 0) 70.71%);
+    /* margin: auto;
+    margin-top: 3rem;*/
+    line-height: 3rem;
 }
 
 .text-primary {
-    color: #0d6efd !important;
+    color: #3aabe1 !important;
 }
 
 .text-color {
@@ -395,27 +398,32 @@ div#proImg {
 /*carousel*/
 .carousel-inner {
     width: auto;
-    height: 500px !important;
+    height: 400px !important;
 }
 
 .carousel-item {
     color: black;
     margin: 0 auto;
+    /*display: block !important;*/
 }
 
 .slideImg {
-    height: 480px;
+    height: 380px;
     object-fit: contain;
     margin-right: auto;
     margin-top: 10px;
     margin-left: 120px;
-    box-shadow: 10px 10px #019eef, -10px -10px #db8b29 !important;
+    /*box-shadow: 10px 10px #019eef, -10px -10px #db8b29 !important;*/
     -webkit-box-shadow: 10px 10px #019eef -10px -10px #db8b29 !important;
     -moz-box-shadow: 10px 10px #019eef, -10px -10px #db8b29 !important;
+   /* box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.15);
+    border-radius: 1rem;
+    transition: all 300ms ease-in-out;*/
 }
 
 .carousel-caption {
-    bottom: 5rem !important;
+    top: 3rem !important;
+    right: 3rem !important;
     color: #db8b29 !important;
     text-align: right !important;
     max-width: 350px;
@@ -566,6 +574,10 @@ div#proImg {
     .card:hover {
         box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.25);
     }
+    .card.pro:hover {
+        transition: all 500ms ease-in-out;
+        transform: translateY(-0.7rem);
+    }
 
         .card:hover .cardHeader::after {
 /*            content: "";
@@ -678,16 +690,16 @@ div#proImg {
 
 
     /*hover img*/
-    a > div {
-        display: none;
-        z-index: 99;
-    }
+a > div.ShH {
+    display: none;
+    z-index: 99;
+}
 
-a:hover > div {
+a:hover > div.ShH {
     display: block;
 }
 
-    a:hover > div img {
+    a:hover > div.ShH img {
         width: 150px;
     }
 
@@ -967,6 +979,8 @@ a.btn.danger:hover, a.btn.danger:active {
 
 #page-content-wrapper {
     min-width: 100vw;
+    overflow: auto;
+    white-space: nowrap;
 }
 
 #wrapper.toggled #sidebar-wrapper {
@@ -994,7 +1008,7 @@ a.btn.danger:hover, a.btn.danger:active {
 
 
 .deals .card {
-    height: 100%;
+    height: fit-content;
 }
 
 #newProducts, .newDeals {
@@ -1002,8 +1016,7 @@ a.btn.danger:hover, a.btn.danger:active {
 }
 .deals {
     position: relative;
-/*    top: -135px;
-*/    padding-top: 1.5rem;
+    padding-top: 1.5rem;
 }
 .mybtn {
     max-width: 200px;
@@ -1028,3 +1041,33 @@ input[type="file"] {
 .con{
     height: 305px;
 }
+
+.ch {
+    text-shadow: 0px 1px 4px #23430C;
+    background-image: linear-gradient( 217deg, rgb(229, 85, 76), rgba(255, 0, 0, 0) 70.71% ), linear-gradient(127deg, rgb(121, 193, 73), rgba(0, 255, 0, 0) 70.71%), linear-gradient(336deg, rgb(58, 171, 225), rgba(0, 0, 255, 0) 70.71%);
+}
+.text-info {
+    margin-bottom: auto;
+    margin-top: auto;
+}
+.summC {
+    height: auto
+}
+.summR {
+    align-items: baseline;
+    text-align: initial;
+}
+.summF {
+    color: maroon;
+}
+.summR .list-group-item:last-child {
+    text-align: end;
+}
+img#gl {
+    height: 45px;
+}
+
+ul.navbar-nav{
+    align-items: center;
+}
+

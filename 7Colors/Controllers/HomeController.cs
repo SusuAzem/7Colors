@@ -24,7 +24,7 @@ namespace _7Colors.Controllers
         private readonly ILogger<HomeController> _logger;
         private readonly AppDbContext context;
 
-        public HomeController(ILogger<HomeController> logger, AppDbContext context, IEmailSender sender)
+        public HomeController(ILogger<HomeController> logger, AppDbContext context)
         {
             _logger = logger;
             this.context = context;
@@ -37,6 +37,10 @@ namespace _7Colors.Controllers
         }
 
         public IActionResult AboutUs()
+        {
+            return View();
+        }
+        public IActionResult Privacy()
         {
             return View();
         }
